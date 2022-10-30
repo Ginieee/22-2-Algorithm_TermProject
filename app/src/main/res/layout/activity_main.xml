@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:textColor="@color/white"
+            android:background="@color/MainGreen"
+            android:text="BOSS"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/librefranklin_bold"
+            android:textAlignment="center"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:id="@+id/main_navicon_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/main_calendar_btn"
+                style="@style/top_selectedButton"
+                android:text="일일 일정"/>
+
+            <TextView
+                android:id="@+id/main_fixed_btn"
+                style="@style/top_unselectedButton"
+                android:text="고정 일정"/>
+
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/main_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+</layout>

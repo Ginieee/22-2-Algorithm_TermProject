@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="top_button_text_size">15sp</dimen>
+    <dimen name="top_button_width">110dp</dimen>
+    <dimen name="top_button_height">30dp</dimen>
+    <dimen name="fixed_box_margin">15dp</dimen>
+    <dimen name="fixed_box_margin_bottom">15dp</dimen>
+    <dimen name="fixed_day_width">100dp</dimen>
+    <dimen name="fixed_day_add_width">60dp</dimen>
+    <dimen name="fixed_day_text_size">13sp</dimen>
+    <dimen name="fixed_body_height">110dp</dimen>
+    <dimen name="fixed_schedule_rv_height">100dp</dimen>
+    <dimen name="text_Mid">15sp</dimen>
+</resources>

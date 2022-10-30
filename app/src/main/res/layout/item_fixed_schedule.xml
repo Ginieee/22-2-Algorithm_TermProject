@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/round_box">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/item_fixed_time_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/item_fixed_time_start"
+                android:text="HH:MM"
+                style="@style/fixed_item_time"/>
+
+            <TextView
+                android:text="~"
+                style="@style/fixed_item_time"/>
+
+            <TextView
+                android:id="@+id/item_fixed_time_end"
+                android:text="HH:MM"
+                style="@style/fixed_item_time"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/item_fixed_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="컴퓨터 및 네트워크"
+            android:textSize="11sp"
+            android:fontFamily="@font/librefranklin_semibold"
+            android:textColor="@color/black"
+            android:textAlignment="center"/>
+
+    </LinearLayout>
+
+
+</layout>

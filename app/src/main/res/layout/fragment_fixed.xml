@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="25dp">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sleep"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textSize="15sp"
+                    android:textAlignment="center"/>
+
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="15dp"
+                    android:background="@color/MainGreen"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/fixed_sleep_start_h"
+                        android:text="HH"
+                        style="@style/fixed_sleep_time"/>
+
+                    <EditText
+                        android:id="@+id/fixed_sleep_start_h_edit"
+                        android:text="HH"
+                        android:inputType="number"
+                        style="@style/fixed_sleep_time"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:text=":"
+                        style="@style/fixed_sleep_time"
+                        android:layout_width="15dp"/>
+
+                    <TextView
+                        android:id="@+id/fixed_sleep_start_m"
+                        android:text="MM"
+                        style="@style/fixed_sleep_time"/>
+
+                    <EditText
+                        android:id="@+id/fixed_sleep_start_m_edit"
+                        android:text="MM"
+                        android:inputType="number"
+                        style="@style/fixed_sleep_time"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:text="~"
+                        style="@style/fixed_sleep_time"/>
+
+                    <TextView
+                        android:id="@+id/fixed_sleep_end_h"
+                        android:text="HH"
+                        style="@style/fixed_sleep_time"/>
+
+                    <EditText
+                        android:id="@+id/fixed_sleep_end_h_edit"
+                        android:text="HH"
+                        android:inputType="number"
+                        style="@style/fixed_sleep_time"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:text=":"
+                        style="@style/fixed_sleep_time"
+                        android:layout_width="15dp"/>
+
+                    <TextView
+                        android:id="@+id/fixed_sleep_end_m"
+                        android:text="MM"
+                        style="@style/fixed_sleep_time"/>
+
+                    <EditText
+                        android:id="@+id/fixed_sleep_end_m_edit"
+                        android:text="MM"
+                        android:inputType="number"
+                        style="@style/fixed_sleep_time"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/fixed_sleep_edit_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="수정"
+                    android:textColor="@color/cardview_dark_background"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textSize="13sp"
+                    android:textAlignment="center"/>
+
+                <TextView
+                    android:id="@+id/fixed_sleep_save_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="저장"
+                    android:textColor="@color/cardview_dark_background"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textSize="13sp"
+                    android:textAlignment="center"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_mon"
+                style="@style/fixed_box">
+
+                <TextView
+                    android:id="@+id/fixed_mon_day"
+                    android:text="월요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_mon_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_mon_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_mon_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_mon_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_mon_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_mon_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"
+                        tools:listitem="@layout/item_fixed_schedule"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_tue"
+                style="@style/fixed_box">
+
+                <TextView
+                    android:id="@+id/fixed_tue_day"
+                    android:text="화요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_tue_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_tue_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_tue_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_tue_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_tue_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_tue_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_wed"
+                style="@style/fixed_box">
+
+                <TextView
+                    android:id="@+id/fixed_wed_day"
+                    android:text="수요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_wed_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_wed_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_wed_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_wed_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_wed_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_wed_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_thu"
+                style="@style/fixed_box">
+
+                <TextView
+                    android:id="@+id/fixed_thu_day"
+                    android:text="목요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_thu_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_thu_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_thu_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_thu_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_thu_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_thu_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_fri"
+                style="@style/fixed_box">
+
+                <TextView
+                    android:id="@+id/fixed_fri_day"
+                    android:text="금요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_fri_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_fri_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_fri_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_fri_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_fri_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_fri_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_sat"
+                style="@style/fixed_box">
+
+                <TextView
+                    android:id="@+id/fixed_sat_day"
+                    android:text="토요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_sat_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_sat_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_sat_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_sat_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_sat_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_sat_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fixed_sun"
+                style="@style/fixed_box"
+                android:layout_marginBottom="30dp">
+
+                <TextView
+                    android:id="@+id/fixed_sun_day"
+                    android:text="일요일"
+                    style="@style/fixed_day"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/fixed_sun_add"
+                    android:text="추가"
+                    style="@style/fixed_day_add"
+                    app:layout_constraintBottom_toBottomOf="@id/fixed_sun_day"
+                    app:layout_constraintStart_toEndOf="@id/fixed_sun_day"/>
+
+                <LinearLayout
+                    android:id="@+id/fixed_sun_schedule"
+                    style="@style/fixed_body"
+                    app:layout_constraintTop_toBottomOf="@id/fixed_sun_day"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fixed_sun_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/fixed_schedule_rv_height"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
