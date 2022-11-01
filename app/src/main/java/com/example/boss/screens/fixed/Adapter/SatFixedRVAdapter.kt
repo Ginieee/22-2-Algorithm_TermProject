@@ -41,7 +41,7 @@ class SatFixedRVAdapter : RecyclerView.Adapter<SatFixedRVAdapter.ViewHolder>() {
     fun addFixed(fixed : ArrayList<FixedSchedule>){
         this.fixed.clear()
         this.fixed.addAll(fixed)
-        notifyDataSetChanged()
+//        notifyDataSetChanged()
     }
 
     inner class ViewHolder(val binding : ItemFixedScheduleBinding) : RecyclerView.ViewHolder(binding.root) {

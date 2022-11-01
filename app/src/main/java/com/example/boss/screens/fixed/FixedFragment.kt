@@ -225,6 +225,15 @@ class FixedFragment : Fragment() {
             friFixedRVAdapter.addFixed(db.fixedDao.getDayFixed(5) as ArrayList)
             satFixedRVAdapter.addFixed(db.fixedDao.getDayFixed(6) as ArrayList)
             sunFixedRVAdapter.addFixed(db.fixedDao.getDayFixed(7) as ArrayList)
+            requireActivity().runOnUiThread {
+                monFixedRVAdapter.notifyDataSetChanged()
+                tueFixedRVAdapter.notifyDataSetChanged()
+                wedFixedRVAdapter.notifyDataSetChanged()
+                thuFixedRVAdapter.notifyDataSetChanged()
+                friFixedRVAdapter.notifyDataSetChanged()
+                satFixedRVAdapter.notifyDataSetChanged()
+                sunFixedRVAdapter.notifyDataSetChanged()
+            }
         }.start()
     }
 
