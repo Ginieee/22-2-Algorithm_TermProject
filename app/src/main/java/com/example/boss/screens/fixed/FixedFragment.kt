@@ -1,22 +1,22 @@
 package com.example.boss.screens.fixed
 
 import android.content.Context
-import android.content.Intent
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boss.MainActivity
 import com.example.boss.R
-import com.example.boss.data.FixedSchedule
 import com.example.boss.data.ScheduleDatabase
+import com.example.boss.data.entity.SleepTime
 import com.example.boss.databinding.FragmentFixedBinding
 import com.example.boss.screens.fixed.Adapter.*
 
@@ -30,11 +30,6 @@ class FixedFragment : Fragment() {
     var endH = ""
     var endM = ""
 
-    private val ADDFIXED = "ADDFIXED"
-    private val DAYNUM = "DAYNUM"
-    private val ISDELETE = "ISDELETE"
-    private val SCHEDULEID = "SCHEDULEID"
-
     private lateinit var binding : FragmentFixedBinding
     lateinit var db : ScheduleDatabase
 
@@ -45,6 +40,15 @@ class FixedFragment : Fragment() {
     private val friFixedRVAdapter = FriFixedRVAdapter()
     private val satFixedRVAdapter = SatFixedRVAdapter()
     private val sunFixedRVAdapter = SunFixedRVAdapter()
+
+    lateinit var pref : SharedPreferences
+    lateinit var edit : SharedPreferences.Editor
+
+    private val SLEEP : String = "SLEEP"
+    private val SLEEPSTARTH : String = "SleepStartH"
+    private val SLEEPSTARTM : String = "SleepStartM"
+    private val SLEEPENDH : String = "SleepEndH"
+    private val SLEEPENDM : String = "SleepEndM"
 
 
     override fun onAttach(context: Context) {
@@ -63,6 +67,11 @@ class FixedFragment : Fragment() {
             R.layout.fragment_fixed, container, false)
 
         db = ScheduleDatabase.getInstance(requireContext())!!
+        pref = mContext.getSharedPreferences(SLEEP, MODE_PRIVATE)
+        edit = pref.edit()
+
+        getPref()
+        setSleepText()
 
         clickHandler()
 
@@ -139,10 +148,21 @@ class FixedFragment : Fragment() {
 
         binding.fixedSleepEditBtn.setOnClickListener {
             editSleep(true)
+            getPref()
+            setSleepEditText()
+
+            binding.fixedSleepStartHEdit.requestFocus()
+            val imm = mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.fixedSleepStartHEdit, 0)
         }
 
         binding.fixedSleepSaveBtn.setOnClickListener {
+            val inputMethodManager = mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(binding.fixedSleepSaveBtn.windowToken, 0)
+
             editSleep(false)
+            putPref()
+            setSleepText()
         }
 
         binding.fixedMonAdd.setOnClickListener {
@@ -246,19 +266,15 @@ class FixedFragment : Fragment() {
             endM = binding.fixedSleepEndM.text.toString()
 
             binding.fixedSleepStartH.visibility = View.GONE
-            binding.fixedSleepStartHEdit.setText(startH)
             binding.fixedSleepStartHEdit.visibility = View.VISIBLE
 
             binding.fixedSleepStartM.visibility = View.GONE
-            binding.fixedSleepStartMEdit.setText(startM)
             binding.fixedSleepStartMEdit.visibility = View.VISIBLE
 
             binding.fixedSleepEndH.visibility = View.GONE
-            binding.fixedSleepEndHEdit.setText(endH)
             binding.fixedSleepEndHEdit.visibility = View.VISIBLE
 
             binding.fixedSleepEndM.visibility = View.GONE
-            binding.fixedSleepEndMEdit.setText(endM)
             binding.fixedSleepEndMEdit.visibility = View.VISIBLE
 
             binding.fixedSleepSaveBtn.visibility = View.VISIBLE
@@ -271,23 +287,50 @@ class FixedFragment : Fragment() {
             endM = binding.fixedSleepEndMEdit.text.toString()
 
             binding.fixedSleepStartHEdit.visibility = View.GONE
-            binding.fixedSleepStartH.setText(startH)
             binding.fixedSleepStartH.visibility = View.VISIBLE
 
             binding.fixedSleepStartMEdit.visibility = View.GONE
-            binding.fixedSleepStartM.setText(startM)
             binding.fixedSleepStartM.visibility = View.VISIBLE
 
             binding.fixedSleepEndHEdit.visibility = View.GONE
-            binding.fixedSleepEndH.setText(endH)
             binding.fixedSleepEndH.visibility = View.VISIBLE
 
             binding.fixedSleepEndMEdit.visibility = View.GONE
-            binding.fixedSleepEndM.setText(endM)
             binding.fixedSleepEndM.visibility = View.VISIBLE
 
             binding.fixedSleepSaveBtn.visibility = View.GONE
             binding.fixedSleepEditBtn.visibility = View.VISIBLE
         }
+    }
+
+    private fun setSleepEditText(){
+        binding.fixedSleepStartHEdit.setText(startH)
+        binding.fixedSleepStartMEdit.setText(startM)
+        binding.fixedSleepEndHEdit.setText(endH)
+        binding.fixedSleepEndMEdit.setText(endM)
+    }
+
+    private fun setSleepText() {
+        binding.fixedSleepStartH.setText(startH)
+        binding.fixedSleepStartM.setText(startM)
+        binding.fixedSleepEndH.setText(endH)
+        binding.fixedSleepEndM.setText(endM)
+    }
+
+    private fun getPref(){
+        startH = pref.getString(SLEEPSTARTH,"00")!!
+        startM = pref.getString(SLEEPSTARTM,"00")!!
+        endH = pref.getString(SLEEPENDH,"00")!!
+        endM = pref.getString(SLEEPENDM,"00")!!
+        Log.d("GETSLEEPCHECK", pref.toString())
+    }
+
+    private fun putPref(){
+        edit.putString(SLEEPSTARTH, startH)
+        edit.putString(SLEEPSTARTM, startM)
+        edit.putString(SLEEPENDH, endH)
+        edit.putString(SLEEPENDM, endM)
+        edit.commit()
+        Log.d("PUTSLEEPCHECK", pref.toString())
     }
 }

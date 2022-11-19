@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.boss.data.FixedSchedule
+import com.example.boss.data.entity.FixedSchedule
 import com.example.boss.databinding.ItemFixedScheduleBinding
 
 class WedFixedRVAdapter : RecyclerView.Adapter<WedFixedRVAdapter.ViewHolder>() {
@@ -45,7 +45,7 @@ class WedFixedRVAdapter : RecyclerView.Adapter<WedFixedRVAdapter.ViewHolder>() {
     }
 
     inner class ViewHolder(val binding : ItemFixedScheduleBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(fixed:FixedSchedule){
+        fun bind(fixed: FixedSchedule){
             binding.itemFixedTimeStart.text = "${fixed.startH}:${fixed.startM}"
             binding.itemFixedTimeEnd.text = "${fixed.endH}:${fixed.endM}"
             binding.itemFixedName.text = fixed.name

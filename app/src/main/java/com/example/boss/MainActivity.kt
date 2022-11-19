@@ -11,6 +11,7 @@ import com.example.boss.data.ScheduleDatabase
 import com.example.boss.databinding.ActivityMainBinding
 import com.example.boss.screens.calendar.CalendarFragment
 import com.example.boss.screens.fixed.FixedFragment
+import com.jakewharton.threetenabp.AndroidThreeTen
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         db = ScheduleDatabase.getInstance(this)!!

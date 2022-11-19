@@ -62,12 +62,14 @@
                     <TextView
                         android:id="@+id/fixed_sleep_start_h"
                         android:text="HH"
+                        android:textStyle="bold"
                         style="@style/fixed_sleep_time"/>
 
                     <EditText
                         android:id="@+id/fixed_sleep_start_h_edit"
                         android:text="HH"
                         android:inputType="number"
+                        android:textColor="@color/Gray"
                         style="@style/fixed_sleep_time"
                         android:visibility="gone"/>
 
@@ -79,12 +81,14 @@
                     <TextView
                         android:id="@+id/fixed_sleep_start_m"
                         android:text="MM"
+                        android:textStyle="bold"
                         style="@style/fixed_sleep_time"/>
 
                     <EditText
                         android:id="@+id/fixed_sleep_start_m_edit"
                         android:text="MM"
                         android:inputType="number"
+                        android:textColor="@color/Gray"
                         style="@style/fixed_sleep_time"
                         android:visibility="gone"/>
 
@@ -95,12 +99,14 @@
                     <TextView
                         android:id="@+id/fixed_sleep_end_h"
                         android:text="HH"
+                        android:textStyle="bold"
                         style="@style/fixed_sleep_time"/>
 
                     <EditText
                         android:id="@+id/fixed_sleep_end_h_edit"
                         android:text="HH"
                         android:inputType="number"
+                        android:textColor="@color/Gray"
                         style="@style/fixed_sleep_time"
                         android:visibility="gone"/>
 
@@ -112,12 +118,14 @@
                     <TextView
                         android:id="@+id/fixed_sleep_end_m"
                         android:text="MM"
+                        android:textStyle="bold"
                         style="@style/fixed_sleep_time"/>
 
                     <EditText
                         android:id="@+id/fixed_sleep_end_m_edit"
                         android:text="MM"
                         android:inputType="number"
+                        android:textColor="@color/Gray"
                         style="@style/fixed_sleep_time"
                         android:visibility="gone"/>
 

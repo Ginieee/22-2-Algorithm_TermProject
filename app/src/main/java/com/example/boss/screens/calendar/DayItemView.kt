@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.core.content.withStyledAttributes
+import androidx.navigation.findNavController
 import com.example.boss.MainActivity
 import com.example.boss.R
 import com.example.boss.utils.CalendarUtils.Companion.getDateColor
@@ -56,6 +57,16 @@ class DayItemView @JvmOverloads constructor(
         }
     }
 
+//    private lateinit var dateClickListeners : DateClickListener
+//
+//    interface DateClickListener {
+//        fun onDateClick(date : DateTime)
+//    }
+//
+//    fun setDateClickListener(dateClickListener : DateClickListener) {
+//        dateClickListeners = dateClickListener
+//    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (canvas == null) return
@@ -70,7 +81,10 @@ class DayItemView @JvmOverloads constructor(
         )
 
         setOnClickListener {
-            Log.d("DAYITEMVIEW", "${date.monthOfYear}월 ${date.dayOfMonth}일 ${date.dayOfWeek}요일")
+            //dateClickListeners.onDateClick(date)
+            val action = CalendarFragmentDirections.actionCalendarFragmentToDailyScheduleFragment(date.year, date.monthOfYear, date.dayOfMonth, date.dayOfWeek)
+            findNavController().navigate(action)
+            Log.d("DAYITEMVIEW_CHECK", "${date.year}년 ${date.monthOfYear}월 ${date.dayOfMonth}일 ${date.dayOfWeek}요일")
         }
     }
 }

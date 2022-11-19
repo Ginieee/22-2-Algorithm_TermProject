@@ -10,6 +10,7 @@
     <color name="MainGreen">#1C6758</color>
     <color name="SubGreen">#EEF2E6</color>
     <color name="littleGray">#F6F6F6</color>
+    <color name="Gray">#424242</color>
     <color name="littleBrown">#D6CDA4</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>

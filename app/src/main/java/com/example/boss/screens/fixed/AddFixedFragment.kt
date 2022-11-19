@@ -6,14 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.boss.MainActivity
 import com.example.boss.R
-import com.example.boss.data.FixedSchedule
+import com.example.boss.data.entity.FixedSchedule
 import com.example.boss.data.ScheduleDatabase
 import com.example.boss.databinding.FragmentAddFixedBinding
 
@@ -21,11 +20,6 @@ class AddFixedFragment : Fragment() {
 
     lateinit var mContext : Context
     lateinit var mActivity : MainActivity
-
-    private val ADDFIXED = "ADDFIXED"
-    private val DAYNUM = "DAYNUM"
-    private val ISDELETE = "ISDELETE"
-    private val SCHEDULEID = "SCHEDULEID"
 
     private var dayNum = 0
     private var isDelete = false

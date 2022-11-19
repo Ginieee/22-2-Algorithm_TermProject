@@ -1,4 +1,4 @@
-package com.example.boss.data
+package com.example.boss.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

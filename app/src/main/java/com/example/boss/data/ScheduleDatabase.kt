@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.boss.data.dao.DailyDao
+import com.example.boss.data.dao.FixedDao
+import com.example.boss.data.entity.*
 
 @Database(entities = [FixedSchedule::class, DailySchedule::class], version = 1, exportSchema = false)
 abstract class ScheduleDatabase : RoomDatabase() {
