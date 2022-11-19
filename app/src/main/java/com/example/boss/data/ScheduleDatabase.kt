@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [FixedSchedule::class], version = 1, exportSchema = false)
+@Database(entities = [FixedSchedule::class, DailySchedule::class], version = 1, exportSchema = false)
 abstract class ScheduleDatabase : RoomDatabase() {
     abstract val fixedDao : FixedDao
+    abstract val dailyDao : DailyDao
 
     companion object {
 
@@ -31,22 +32,5 @@ abstract class ScheduleDatabase : RoomDatabase() {
                 return instance
             }
         }
-
-
-//        private var instance : ScheduleDatabase? = null
-//
-//        @Synchronized
-//        fun getInstance(context : Context) : ScheduleDatabase? {
-//            if(instance == null){
-//                synchronized(ScheduleDatabase::class){
-//                    instance = Room.databaseBuilder(
-//                        context.applicationContext,
-//                        ScheduleDatabase::class.java,
-//                        "schedule_database"
-//                    ).build()
-//                }
-//            }
-//            return instance
-//        }
     }
 }

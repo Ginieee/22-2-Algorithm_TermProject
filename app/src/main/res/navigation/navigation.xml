@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.boss.screens.splash.SplashFragment"
+        android:label="SplashFragment"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/action_splashFragment_to_onboardingFragment"
+            app:destination="@id/onboardingFragment"
+            app:enterAnim="@anim/fadein"
+            app:exitAnim="@anim/fadeout"
+            app:popEnterAnim="@anim/fadein"
+            app:popExitAnim="@anim/fadeout"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_calendarFragment"
+            app:destination="@id/calendarFragment"
+            app:enterAnim="@anim/fadein"
+            app:exitAnim="@anim/fadeout"
+            app:popEnterAnim="@anim/fadein"
+            app:popExitAnim="@anim/fadeout"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.example.boss.screens.splash.OnboardingFragment"
+        android:label="OnboardingFragment"
+        tools:layout="@layout/fragment_onboarding">
+        <action
+            android:id="@+id/action_onboardingFragment_to_calendarFragment"
+            app:destination="@id/calendarFragment"
+            app:enterAnim="@anim/fadein"
+            app:exitAnim="@anim/fadeout"
+            app:popEnterAnim="@anim/fadein"
+            app:popExitAnim="@anim/fadeout"
+            app:popUpTo="@id/onboardingFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.example.boss.screens.calendar.CalendarFragment"
+        android:label="CalendarFragment"
+        tools:layout="@layout/fragment_calendar">
+        <action
+            android:id="@+id/action_calendarFragment_to_fixedFragment"
+            app:destination="@id/fixedFragment"
+            app:popUpTo="@id/calendarFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/fixedFragment"
+        android:name="com.example.boss.screens.fixed.FixedFragment"
+        android:label="FixedFragment"
+        tools:layout="@layout/fragment_fixed">
+        <action
+            android:id="@+id/action_fixedFragment_to_addFixedFragment"
+            app:destination="@id/addFixedFragment" />
+        <action
+            android:id="@+id/action_fixedFragment_to_calendarFragment"
+            app:destination="@id/calendarFragment"
+            app:popUpTo="@id/fixedFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/addFixedFragment"
+        android:name="com.example.boss.screens.fixed.AddFixedFragment"
+        android:label="AddFixedFragment"
+        tools:layout="@layout/fragment_add_fixed">
+        <action
+            android:id="@+id/action_addFixedFragment_to_fixedFragment"
+            app:destination="@id/fixedFragment"
+            app:popUpTo="@id/addFixedFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            android:defaultValue="요일 일정 추가" />
+        <argument
+            android:name="dayId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="isDelete"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="scheduleId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+</navigation>

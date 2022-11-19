@@ -1,12 +1,17 @@
 package com.example.boss.screens.fixed
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boss.MainActivity
 import com.example.boss.R
@@ -16,6 +21,9 @@ import com.example.boss.databinding.FragmentFixedBinding
 import com.example.boss.screens.fixed.Adapter.*
 
 class FixedFragment : Fragment() {
+
+    lateinit var mContext : Context
+    lateinit var mActivity : MainActivity
 
     var startH = ""
     var startM = ""
@@ -38,6 +46,14 @@ class FixedFragment : Fragment() {
     private val satFixedRVAdapter = SatFixedRVAdapter()
     private val sunFixedRVAdapter = SunFixedRVAdapter()
 
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is MainActivity){
+            mContext = context
+            mActivity = activity as MainActivity
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,88 +85,58 @@ class FixedFragment : Fragment() {
     private fun setItemClickListener(){
         monFixedRVAdapter.setMyItemClickListener(object : MonFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "월요일 일정")
-                    putExtra(DAYNUM, 1)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("월요일 일정",1, true, id)
+                findNavController().navigate(action)
             }
         })
 
         tueFixedRVAdapter.setMyItemClickListener(object : TueFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "화요일 일정")
-                    putExtra(DAYNUM, 2)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("화요일 일정",2, true, id)
+                findNavController().navigate(action)
             }
         })
         wedFixedRVAdapter.setMyItemClickListener(object : WedFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "수요일 일정")
-                    putExtra(DAYNUM, 3)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("수요일 일정",3, true, id)
+                findNavController().navigate(action)
             }
         })
 
         thuFixedRVAdapter.setMyItemClickListener(object : ThuFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "목요일 일정")
-                    putExtra(DAYNUM, 4)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("목요일 일정",4, true, id)
+                findNavController().navigate(action)
             }
         })
         friFixedRVAdapter.setMyItemClickListener(object : FriFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "금요일 일정")
-                    putExtra(DAYNUM, 5)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("금요일 일정",5, true, id)
+                findNavController().navigate(action)
             }
         })
 
         satFixedRVAdapter.setMyItemClickListener(object : SatFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "화요일 일정")
-                    putExtra(DAYNUM, 6)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("토요일 일정",6, true, id)
+                findNavController().navigate(action)
             }
         })
 
         sunFixedRVAdapter.setMyItemClickListener(object : SunFixedRVAdapter.MyItemClickListener{
             override fun onSendId(id: Int) {
-                val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                    putExtra(ADDFIXED, "일요일 일정")
-                    putExtra(DAYNUM, 7)
-                    putExtra(ISDELETE, true)
-                    putExtra(SCHEDULEID, id)
-                }
-                startActivity(intent)
+                val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("일요일 일정",7, true, id)
+                findNavController().navigate(action)
             }
         })
     }
 
     private fun clickHandler(){
+
+        binding.mainCalendarBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_fixedFragment_to_calendarFragment)
+        }
+
         binding.fixedSleepEditBtn.setOnClickListener {
             editSleep(true)
         }
@@ -160,59 +146,38 @@ class FixedFragment : Fragment() {
         }
 
         binding.fixedMonAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "월요일 일정 추가")
-                putExtra(DAYNUM, 1)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("월요일 일정 추가",1, false, -1)
+            findNavController().navigate(action)
         }
 
         binding.fixedTueAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "화요일 일정 추가")
-                putExtra(DAYNUM, 2)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("화요일 일정 추가",2, false, -1)
+            findNavController().navigate(action)
         }
 
         binding.fixedWedAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "수요일 일정 추가")
-                putExtra(DAYNUM, 3)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("수요일 일정 추가",3, false, -1)
+            findNavController().navigate(action)
         }
 
         binding.fixedThuAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "목요일 일정 추가")
-                putExtra(DAYNUM, 4)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("목요일 일정 추가",4, false, -1)
+            findNavController().navigate(action)
         }
 
         binding.fixedFriAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "금요일 일정 추가")
-                putExtra(DAYNUM, 5)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("금요일 일정 추가",5, false, -1)
+            findNavController().navigate(action)
         }
 
         binding.fixedSatAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "토요일 일정 추가")
-                putExtra(DAYNUM, 6)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("토요일 일정 추가",6, false, -1)
+            findNavController().navigate(action)
         }
 
         binding.fixedSunAdd.setOnClickListener {
-            val intent = Intent(context as MainActivity, AddFixedActivity::class.java).apply {
-                putExtra(ADDFIXED, "일요일 일정 추가")
-                putExtra(DAYNUM, 7)
-            }
-            startActivity(intent)
+            val action = FixedFragmentDirections.actionFixedFragmentToAddFixedFragment("일요일 일정 추가",7, false, -1)
+            findNavController().navigate(action)
         }
     }
 
@@ -325,5 +290,4 @@ class FixedFragment : Fragment() {
             binding.fixedSleepEditBtn.visibility = View.VISIBLE
         }
     }
-
 }

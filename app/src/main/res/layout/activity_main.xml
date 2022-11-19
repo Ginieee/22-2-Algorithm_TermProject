@@ -4,11 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+
 
         <TextView
             android:id="@+id/toolbar_title"
@@ -21,33 +21,23 @@
             android:textStyle="bold"
             android:fontFamily="@font/librefranklin_bold"
             android:textAlignment="center"
-            android:gravity="center"/>
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
 
-        <LinearLayout
-            android:id="@+id/main_navicon_layout"
+        <fragment
+            android:id="@+id/nav_host"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/main_calendar_btn"
-                style="@style/top_selectedButton"
-                android:text="일일 일정"/>
-
-            <TextView
-                android:id="@+id/main_fixed_btn"
-                style="@style/top_unselectedButton"
-                android:text="고정 일정"/>
+            android:layout_height="0dp"
+            app:navGraph="@navigation/navigation"
+            app:defaultNavHost="true"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-        </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

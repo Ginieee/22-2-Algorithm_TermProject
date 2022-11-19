@@ -37,6 +37,8 @@ android {
 }
 
 apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
 
 dependencies {
 
@@ -62,5 +64,9 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 
+    //lottie - animation
+    implementation 'com.airbnb.android:lottie:3.5.0'
 
+    //dot indicator
+    implementation "com.tbuonomo:dotsindicator:4.3"
 }

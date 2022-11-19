@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
+            android:id="@+id/daily_schedule_fixed_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -41,6 +41,7 @@
                 android:fontFamily="@font/librefranklin_semibold"
                 android:text="YY.MM.DD(요일)"
                 android:textSize="18sp"
+                android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,214 +49,156 @@
                 android:id="@+id/daily_line"
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/MainGreen"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/daily_date" />
 
             <TextView
-                android:id="@+id/daily_fixed_schedule"
+                android:id="@+id/daily_fixed_title"
                 style="@style/fixed_day"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="15dp"
                 android:text="고정 일정"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/daily_line" />
 
             <LinearLayout
-                android:id="@+id/daily_fixed_schedule_body"
+                android:id="@+id/daily_fixed_body"
                 style="@style/fixed_body"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/daily_fixed_schedule"></LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/daily_fixed_title">
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/librefranklin_semibold"
-                android:text="수면시간을 고려한 가용 시간 : "
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/daily_fixed_schedule_body" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/daily_fixed_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    tools:listitem="@layout/item_fixed_schedule"/>
 
-            <TextView
-                android:id="@+id/left_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/librefranklin_semibold"
-                android:text="HH시간 MM분"
-                app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/daily_fixed_schedule_body" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ScrollView
-            android:id="@+id/scrollView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:orientation="vertical">
+                android:paddingTop="10dp"
+                android:paddingBottom="15dp"
+                app:layout_constraintTop_toBottomOf="@id/daily_fixed_body">
 
                 <TextView
-                    android:id="@+id/daily_work"
-                    style="@style/daily_work"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="오늘의 할 일" />
-
-                <LinearLayout
-                    android:id="@+id/daily_work_component"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="순위" />
-
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="할 일" />
-
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="시간" />
-
-                    <TextView
-                        android:id="@+id/textView9"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="잔여 예상 소요시간" />
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/daily_line2"
-                    android:layout_width="match_parent"
-                    android:layout_height="2px"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@color/MainGreen" />
-
-                <LinearLayout
-                    android:id="@+id/daily_work_1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="1" />
-
-                    <TextView
-                        android:id="@+id/textView11"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="과제" />
-
-                    <TextView
-                        android:id="@+id/textView12"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="HH:MM~HH:MM" />
-
-                    <TextView
-                        android:id="@+id/textView13"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="HH시간MM분" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/daily_work_2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView14"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="2" />
-
-                    <TextView
-                        android:id="@+id/textView15"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="과제" />
-
-                    <TextView
-                        android:id="@+id/textView16"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="HH:MM~HH:MM" />
-
-                    <TextView
-                        android:id="@+id/textView17"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:fontFamily="@font/librefranklin_semibold"
-                        android:text="HH시간MM분" />
-                </LinearLayout>
+                    android:id="@+id/daily_schedule_can_time_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:text="수면시간을 고려한 가용 시간  : "
+                    android:textSize="12sp"
+                    android:textAlignment="center"
+                    android:gravity="center"/>
 
                 <TextView
-                    android:id="@+id/change_daily_work"
-                    style="@style/add_daily_work"
-                    android:layout_width="70dp"
+                    android:id="@+id/left_time"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="일일 일정 변경"
-                    android:layout_marginTop="8dp"
-                    android:textSize="10sp" />
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:text="HH시간 MM분"/>
 
             </LinearLayout>
-        </ScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/daily_schedule_fixed_layout">
+
+            <TextView
+                android:id="@+id/daily_work"
+                style="@style/daily_work"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="오늘의 할 일"
+                android:layout_marginBottom="15dp"/>
+
+            <LinearLayout
+                android:id="@+id/daily_work_component"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:text="순위" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:text="할 일" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:text="시간" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:fontFamily="@font/librefranklin_semibold"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:text="잔여 예상 소요시간" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/daily_line2"
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/MainGreen" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                tools:listitem="@layout/item_todo"/>
+
+            <TextView
+                android:id="@+id/change_daily_work"
+                style="@style/add_daily_work"
+                android:layout_width="90dp"
+                android:layout_height="20dp"
+                android:text="일일 일정 변경"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:textSize="10sp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
