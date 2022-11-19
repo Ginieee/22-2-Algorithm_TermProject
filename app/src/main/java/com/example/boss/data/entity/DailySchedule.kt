@@ -11,23 +11,32 @@ data class DailySchedule(
     var dailyId : Int = 0,
 
     @ColumnInfo(name = "daily_day")
-    var day : String = "",
+    var day : Int = 0,
+
+    @ColumnInfo(name = "daily_year")
+    var year : Int = 0,
+
+    @ColumnInfo(name = "daily_month")
+    var month : Int = 0,
+
+    @ColumnInfo(name = "daily_date")
+    var date : Int = 0,
 
     @ColumnInfo(name = "daily_name")
     var name : String = "",
 
-    @ColumnInfo(name = "important")
+    @ColumnInfo(name = "daily_important")
     var important : Boolean = false,
 
-    @ColumnInfo(name = "timeH")
+    @ColumnInfo(name = "daily_timeH")
     var timeH : String = "",
 
-    @ColumnInfo(name = "timeM")
+    @ColumnInfo(name = "daily_timeM")
     var timeM : String = "",
 
-    @ColumnInfo(name = "deadline_month")
+    @ColumnInfo(name = "daily_deadline_month")
     var deadlineMonth : String = "",
 
-    @ColumnInfo(name = "deadline_date")
+    @ColumnInfo(name = "daily_deadline_date")
     var deadlineDate : String = "",
 )

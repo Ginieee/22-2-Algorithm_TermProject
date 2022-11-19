@@ -18,8 +18,8 @@ interface DailyDao {
     @Update
     fun updateDaily(daily : DailySchedule)
 
-    @Query("SELECT * FROM daily_schedule_table WHERE daily_day = :day ORDER BY dailyId ASC")
-    fun getDayDaily(day : String) : List<DailySchedule>
+    @Query("SELECT * FROM daily_schedule_table WHERE daily_year= :year AND daily_month= :month AND daily_date= :date ORDER BY dailyId ASC")
+    fun getDateDaily(year : Int, month : Int, date : Int) : List<DailySchedule>
 
     @Query("SELECT * FROM daily_schedule_table WHERE dailyId= :id")
     fun getDaily(id : Int) : DailySchedule

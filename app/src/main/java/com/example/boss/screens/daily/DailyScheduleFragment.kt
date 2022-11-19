@@ -10,14 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boss.MainActivity
 import com.example.boss.R
 import com.example.boss.data.ScheduleDatabase
+import com.example.boss.data.entity.DailySchedule
 import com.example.boss.data.entity.FixedSchedule
 import com.example.boss.databinding.FragmentDailyScheduleBinding
 import com.example.boss.screens.daily.adapter.DailyFixedScheduleRVAdapter
+import com.example.boss.screens.daily.adapter.DailyScheduleRVAdapter
 import org.joda.time.DateTime
 
 class DailyScheduleFragment : Fragment() {
@@ -57,6 +60,9 @@ class DailyScheduleFragment : Fragment() {
     private val dailyFixedScheduleRVAdapter = DailyFixedScheduleRVAdapter()
     private var fixed : ArrayList<FixedSchedule> = ArrayList<FixedSchedule>()
 
+    private val dailyTodoRVAdapter = DailyScheduleRVAdapter()
+    private var daily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is MainActivity) {
@@ -85,7 +91,28 @@ class DailyScheduleFragment : Fragment() {
         getPref()
         setFixedAdapter()
 
+        clickHandler()
+
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setDailyAdapter()
+    }
+
+    private fun clickHandler() {
+        binding.dailyAddBtn.setOnClickListener {
+            val action = DailyScheduleFragmentDirections.actionDailyScheduleFragmentToAddDailyFragment(arg.year, arg.month, arg.date, arg.day)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun setDailyAdapter() {
+        binding.dailyTodoRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.dailyTodoRv.adapter = dailyTodoRVAdapter
+
+        getDailyFromDB()
     }
 
     private fun setFixedAdapter(){
@@ -93,6 +120,17 @@ class DailyScheduleFragment : Fragment() {
         binding.dailyFixedRv.adapter = dailyFixedScheduleRVAdapter
 
         getFixedFromDB()
+    }
+
+    private fun getDailyFromDB() {
+        var forDB : Thread = Thread {
+            daily = db.dailyDao.getDateDaily(arg.year, arg.month, arg.date) as ArrayList
+            dailyTodoRVAdapter.addDaily(daily)
+            requireActivity().runOnUiThread {
+                dailyTodoRVAdapter.notifyDataSetChanged()
+            }
+        }
+        forDB.start()
     }
 
     private fun getFixedFromDB(){
@@ -156,14 +194,5 @@ class DailyScheduleFragment : Fragment() {
         else validM = min.toString()
 
         binding.dailyScheduleValidTime.text = validH + "시간 " + validM + "분"
-    }
-
-    private fun putPref(){
-        edit.putString(SLEEPSTARTH, startH)
-        edit.putString(SLEEPSTARTM, startM)
-        edit.putString(SLEEPENDH, endH)
-        edit.putString(SLEEPENDM, endM)
-        edit.commit()
-        Log.d("PUTSLEEPCHECK_DAILY", pref.toString())
     }
 }

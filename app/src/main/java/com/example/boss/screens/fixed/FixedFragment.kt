@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boss.MainActivity
 import com.example.boss.R
 import com.example.boss.data.ScheduleDatabase
-import com.example.boss.data.entity.SleepTime
 import com.example.boss.databinding.FragmentFixedBinding
 import com.example.boss.screens.fixed.Adapter.*
 

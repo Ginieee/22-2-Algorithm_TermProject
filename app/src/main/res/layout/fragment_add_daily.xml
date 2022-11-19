@@ -8,23 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".screens.fixed.AddFixedActivity">
-
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/MainGreen"
-            android:fontFamily="@font/librefranklin_bold"
-            android:gravity="center"
-            android:text="BOSS"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        tools:context=".screens/daily.Ad/dailyActivity">
 
         <View
             android:id="@+id/space"
@@ -122,8 +106,7 @@
                         android:id="@+id/daily_add_normal_radio_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
-                        android:text="일반"
-                        android:onClick="onRadiobuttonClicked"/>
+                        android:text="일반"/>
 
                 </RadioGroup>
 
@@ -159,7 +142,7 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/fixed_add_start_h_edit"
+                        android:id="@+id/daily_add_time_h_edit"
                         style="@style/fixed_sleep_time"
                         android:hint="HH"
                         android:inputType="number" />
@@ -170,7 +153,7 @@
                         android:text="시간" />
 
                     <EditText
-                        android:id="@+id/fixed_add_start_m_edit"
+                        android:id="@+id/daily_add_time_m_edit"
                         style="@style/fixed_sleep_time"
                         android:hint="MM"
                         android:inputType="number" />
@@ -214,7 +197,7 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/fixed_add_end_h_edit"
+                        android:id="@+id/daily_add_deadline_month_edit"
                         style="@style/fixed_sleep_time"
                         android:hint="MM"
                         android:inputType="number" />
@@ -225,7 +208,7 @@
                         android:text="월" />
 
                     <EditText
-                        android:id="@+id/fixed_add_end_m_edit"
+                        android:id="@+id/daily_add_deadline_date_edit"
                         style="@style/fixed_sleep_time"
                         android:hint="DD"
                         android:inputType="number" />
@@ -242,7 +225,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/add_fixed_title_tv"
+            android:id="@+id/daily_add_title_tv"
             android:text="MM월 DD일 일정 추가"
             style="@style/top_selectedButton"
             android:layout_width="200dp"
@@ -250,7 +233,7 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <LinearLayout
-            android:id="@+id/main_navicon_layout"
+            android:id="@+id/daily_add_btns_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
@@ -259,17 +242,17 @@
             android:translationY="-25dp">
 
             <TextView
-                android:id="@+id/fixed_add_back_btn"
+                android:id="@+id/daily_add_back_btn"
                 style="@style/top_unselectedButton"
                 android:text="취소"/>
 
             <TextView
-                android:id="@+id/fixed_add_save_btn"
+                android:id="@+id/daily_add_save_btn"
                 style="@style/top_selectedButton"
                 android:text="저장"/>
 
             <TextView
-                android:id="@+id/fixed_add_delete_btn"
+                android:id="@+id/daily_add_delete_btn"
                 style="@style/top_selectedButton"
                 android:text="삭제"
                 android:visibility="gone"/>
