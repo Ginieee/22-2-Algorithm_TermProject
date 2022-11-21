@@ -18,6 +18,7 @@ import com.example.boss.R
 import com.example.boss.data.ScheduleDatabase
 import com.example.boss.data.entity.DailySchedule
 import com.example.boss.data.entity.FixedSchedule
+import com.example.boss.data.entity.OrderedSchedule
 import com.example.boss.databinding.FragmentDailyScheduleBinding
 import com.example.boss.screens.daily.adapter.DailyFixedScheduleRVAdapter
 import com.example.boss.screens.daily.adapter.DailyScheduleRVAdapter
@@ -64,7 +65,7 @@ class DailyScheduleFragment : Fragment() {
 
     private val dailyTodoRVAdapter = DailyScheduleRVAdapter()
     private var daily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
-    private var orderedDaily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
+    private var orderedDaily : ArrayList<OrderedSchedule> = ArrayList<OrderedSchedule>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -224,19 +225,25 @@ class DailyScheduleFragment : Fragment() {
             print_important()
 
             for (work in daily) {
-                orderedDaily.add(work)
+                orderedDaily.add(
+                    OrderedSchedule(work.dailyId, work.name, "00","00","00","00",work.timeH.toInt() * 60 + work.timeM
+                    .toInt())
+                )
             }
         }
         else {
             print_important()
 
             for (i in 0 until daily.size) {
+                var temp = daily.get(i)
                 if (useValidTime - time_to_minute(daily.get(i)) >= 0) {
-                    orderedDaily.add(daily.get(i))
+                    orderedDaily.add(OrderedSchedule(temp.dailyId, temp.name, "00","00","00","00",temp.timeH.toInt() * 60 + temp.timeM
+                    .toInt()))
                     useValidTime -= time_to_minute(daily.get(i))
                 }
                 else {
-                    orderedDaily.add(DailySchedule(100, 1, 2022, 12,26,"시간부족",false, "05","05","12","26"))
+                    orderedDaily.add(OrderedSchedule(temp.dailyId, temp.name, "시간","부족","시간","부족",temp.timeH.toInt() * 60 + temp.timeM
+                        .toInt()))
                     break
                 }
             }
@@ -287,9 +294,10 @@ class DailyScheduleFragment : Fragment() {
         var i = 0
         while (i < daily.size && useValidTime > 0) {
             var work = time_to_minute(daily.get(i))
-
             if (daily.get(i).important) {
-                orderedDaily.add(daily.get(i))
+                var temp = daily.get(i)
+                orderedDaily.add(OrderedSchedule(temp.dailyId, temp.name, "00","00","00","00",temp.timeH.toInt() * 60 + temp.timeM
+                    .toInt()))
                 daily.removeAt(i)
                 useValidTime -= work
             }

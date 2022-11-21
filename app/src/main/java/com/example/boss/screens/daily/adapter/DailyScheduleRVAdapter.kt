@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.boss.data.entity.DailySchedule
+import com.example.boss.data.entity.OrderedSchedule
 import com.example.boss.databinding.ItemTodoBinding
 
 class DailyScheduleRVAdapter : RecyclerView.Adapter<DailyScheduleRVAdapter.ViewHolder>() {
 
-    private val daily = ArrayList<DailySchedule>()
+    private val daily = ArrayList<OrderedSchedule>()
 
     interface MyItemClickListener{
         fun onSendId(id:Int)
@@ -38,17 +39,17 @@ class DailyScheduleRVAdapter : RecyclerView.Adapter<DailyScheduleRVAdapter.ViewH
     override fun getItemCount(): Int = daily.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addDaily(daily : ArrayList<DailySchedule>) {
+    fun addDaily(daily : ArrayList<OrderedSchedule>) {
         this.daily.clear()
         this.daily.addAll(daily)
     }
 
     inner class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(daily : DailySchedule, position: Int) {
+        fun bind(daily : OrderedSchedule, position: Int) {
             binding.itemTodoOrder.text = (position + 1).toString()
             binding.itemTodoName.text = daily.name
-            binding.itemTodoTime.text = "HH:MM ~ HH:MM"
-            binding.itemTodoLessTime.text = "NN"
+            binding.itemTodoTime.text = daily.startH + ":" + daily.startM + " ~ " + daily.endH + ":" + daily.endM
+            binding.itemTodoLessTime.text = daily.leftMinute.toString()
         }
     }
 }
