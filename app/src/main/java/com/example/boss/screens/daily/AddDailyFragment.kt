@@ -35,6 +35,8 @@ class AddDailyFragment : Fragment() {
     private var date : Int = 0
     private var day : Int = 0
 
+    var deleteDaily : DailySchedule = DailySchedule()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is MainActivity){
@@ -52,12 +54,43 @@ class AddDailyFragment : Fragment() {
         getArgs()
         db = ScheduleDatabase.getInstance(requireContext())!!
 
-        var title : String = month.toString() + "월 " + date + "일 일정 추가"
+        var title : String = if (arg.isDelete) month.toString() + "월 " + date + "일 일정 추가" else month.toString() + "월 " + date + "일 일정 삭제"
         binding.dailyAddTitleTv.text = title
+
+        if (arg.isDelete) {
+            binding.dailyAddSaveBtn.visibility = View.GONE
+            binding.dailyAddDeleteBtn.visibility = View.VISIBLE
+            setDelete()
+        } else {
+            binding.dailyAddSaveBtn.visibility = View.VISIBLE
+            binding.dailyAddDeleteBtn.visibility = View.GONE
+        }
 
         clickHandler()
 
         return binding.root
+    }
+
+    private fun setDelete(){
+        Thread{
+            deleteDaily = db.dailyDao.getDaily(arg.scheduleId)
+            Log.d("ADDDAILYCHECK",deleteDaily.toString())
+            Log.d("ADDDAILYCHECK","UI실행")
+            mActivity.runOnUiThread {
+                binding.dailyAddNameEt.setText(deleteDaily.name)
+                binding.dailyAddTimeHEdit.setText(deleteDaily.timeH)
+                binding.dailyAddTimeMEdit.setText(deleteDaily.timeM)
+                binding.dailyAddDeadlineMonthEdit.setText(deleteDaily.deadlineMonth)
+                binding.dailyAddDeadlineDateEdit.setText(deleteDaily.deadlineDate)
+                if (deleteDaily.important) {
+                    binding.dailyAddImportantRadioBtn.isChecked = true
+                    binding.dailyAddNormalRadioBtn.isChecked = false
+                } else {
+                    binding.dailyAddImportantRadioBtn.isChecked = false
+                    binding.dailyAddNormalRadioBtn.isChecked = true
+                }
+            }
+        }.start()
     }
 
     private fun getArgs() {
@@ -91,6 +124,14 @@ class AddDailyFragment : Fragment() {
         }
         binding.dailyAddNormalRadioBtn.setOnClickListener {
             onRadioButtonClicked(binding.dailyAddNormalRadioBtn)
+        }
+
+        binding.dailyAddDeleteBtn.setOnClickListener {
+            Thread {
+                db.dailyDao.deleteDaily(deleteDaily)
+            }.start()
+            val action = AddDailyFragmentDirections.actionAddDailyFragmentToDailyScheduleFragment(year, month, date, day)
+            findNavController().navigate(action)
         }
     }
 

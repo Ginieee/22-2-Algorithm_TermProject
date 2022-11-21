@@ -26,4 +26,5 @@ interface DailyDao {
 
     @Query("DELETE FROM fixed_schedule_table WHERE fixedId= :id")
     fun deleteID(id:Int)
+
 }

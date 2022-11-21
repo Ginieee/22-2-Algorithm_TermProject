@@ -11,6 +11,16 @@ class DailyScheduleRVAdapter : RecyclerView.Adapter<DailyScheduleRVAdapter.ViewH
 
     private val daily = ArrayList<DailySchedule>()
 
+    interface MyItemClickListener{
+        fun onSendId(id:Int)
+    }
+
+    private lateinit var mItemClickListener : MyItemClickListener
+
+    fun setMyItemClickListener(itemClickListener : MyItemClickListener){
+        mItemClickListener = itemClickListener
+    }
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding : ItemTodoBinding = ItemTodoBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
 
@@ -18,7 +28,11 @@ class DailyScheduleRVAdapter : RecyclerView.Adapter<DailyScheduleRVAdapter.ViewH
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(daily[position])
+        holder.bind(daily[position], position)
+
+        holder.itemView.setOnClickListener {
+            mItemClickListener.onSendId(daily[position].dailyId)
+        }
     }
 
     override fun getItemCount(): Int = daily.size
@@ -30,8 +44,8 @@ class DailyScheduleRVAdapter : RecyclerView.Adapter<DailyScheduleRVAdapter.ViewH
     }
 
     inner class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(daily : DailySchedule) {
-            binding.itemTodoOrder.text = daily.dailyId.toString()
+        fun bind(daily : DailySchedule, position: Int) {
+            binding.itemTodoOrder.text = (position + 1).toString()
             binding.itemTodoName.text = daily.name
             binding.itemTodoTime.text = "HH:MM ~ HH:MM"
             binding.itemTodoLessTime.text = "NN"

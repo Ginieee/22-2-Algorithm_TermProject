@@ -53,6 +53,8 @@ class DailyScheduleFragment : Fragment() {
     var validH : String = ""
     var validM : String = ""
 
+    var useValidTime : Int = 0
+
     private val arg : DailyScheduleFragmentArgs by navArgs()
     lateinit var date : DateTime
     private var day : Int = 0
@@ -62,6 +64,7 @@ class DailyScheduleFragment : Fragment() {
 
     private val dailyTodoRVAdapter = DailyScheduleRVAdapter()
     private var daily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
+    private var orderedDaily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -89,66 +92,80 @@ class DailyScheduleFragment : Fragment() {
         edit = pref.edit()
 
         getPref()
-        setFixedAdapter()
 
         clickHandler()
+        setItemClickListener()
 
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        setDailyAdapter()
+        orderedDaily.clear()
+        setAdapter()
     }
 
     private fun clickHandler() {
         binding.dailyAddBtn.setOnClickListener {
-            val action = DailyScheduleFragmentDirections.actionDailyScheduleFragmentToAddDailyFragment(arg.year, arg.month, arg.date, arg.day)
+            val action = DailyScheduleFragmentDirections.actionDailyScheduleFragmentToAddDailyFragment(arg.year, arg.month, arg.date, arg.day, false, -1)
             findNavController().navigate(action)
         }
     }
 
-    private fun setDailyAdapter() {
-        binding.dailyTodoRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.dailyTodoRv.adapter = dailyTodoRVAdapter
-
-        getDailyFromDB()
-    }
-
-    private fun setFixedAdapter(){
+    private fun setAdapter(){
         binding.dailyFixedRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.dailyFixedRv.adapter = dailyFixedScheduleRVAdapter
 
-        getFixedFromDB()
+        binding.dailyTodoRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.dailyTodoRv.adapter = dailyTodoRVAdapter
+
+        getFixedAndDailyFromDB()
     }
 
-    private fun getDailyFromDB() {
-        var forDB : Thread = Thread {
-            daily = db.dailyDao.getDateDaily(arg.year, arg.month, arg.date) as ArrayList
-            dailyTodoRVAdapter.addDaily(daily)
-            requireActivity().runOnUiThread {
-                dailyTodoRVAdapter.notifyDataSetChanged()
+    private fun setItemClickListener() {
+        dailyTodoRVAdapter.setMyItemClickListener(object : DailyScheduleRVAdapter.MyItemClickListener {
+            override fun onSendId(id: Int) {
+                val action = DailyScheduleFragmentDirections.actionDailyScheduleFragmentToAddDailyFragment(arg.year, arg.month, arg.date, arg.day, true, id)
+                findNavController().navigate(action)
             }
-        }
-        forDB.start()
+        })
     }
 
-    private fun getFixedFromDB(){
-        var forDB : Thread = Thread {
+    private fun getFixedAndDailyFromDB(){
+        var forFixedDB : Thread = Thread {
             fixed = db.fixedDao.getDayFixed(day) as ArrayList
             dailyFixedScheduleRVAdapter.addFixed(fixed)
             requireActivity().runOnUiThread {
                 dailyFixedScheduleRVAdapter.notifyDataSetChanged()
             }
         }
-        forDB.start()
+        forFixedDB.start()
 
         try {
-            forDB.join()
+            forFixedDB.join()
         } catch (e : InterruptedException) {
             e.printStackTrace()
         }
         getValidTime()
+
+        var forDailyDB : Thread = Thread {
+            daily = db.dailyDao.getDateDaily(arg.year, arg.month, arg.date) as ArrayList
+//            dailyTodoRVAdapter.addDaily(daily)
+//            requireActivity().runOnUiThread {
+//                dailyTodoRVAdapter.notifyDataSetChanged()
+//            }
+        }
+        forDailyDB.start()
+
+        try {
+            forDailyDB.join()
+        } catch (e : InterruptedException) {
+            e.printStackTrace()
+        }
+        print_daily_work()
+        dailyTodoRVAdapter.addDaily(orderedDaily)
+        dailyTodoRVAdapter.notifyDataSetChanged()
+
     }
 
 
@@ -183,6 +200,7 @@ class DailyScheduleFragment : Fragment() {
         sumFixedTime()
 
         validTime = (24 * 60) - (sleepTime + fixedTime)
+        useValidTime = validTime
         Log.d("SUM_VALID", validTime.toString())
         var hour = validTime / 60
         var min = validTime % 60
@@ -194,5 +212,92 @@ class DailyScheduleFragment : Fragment() {
         else validM = min.toString()
 
         binding.dailyScheduleValidTime.text = validH + "시간 " + validM + "분"
+    }
+
+    //getDailyFromDB에서 데이터 받아오기 끝난 다음에 실행해야 됨
+    private fun print_daily_work(){
+        sort_daily()
+
+        var daily_all = find_daily_all()
+
+        if (daily_all <= useValidTime) {
+            print_important()
+
+            for (work in daily) {
+                orderedDaily.add(work)
+            }
+        }
+        else {
+            print_important()
+
+            for (i in 0 until daily.size) {
+                if (useValidTime - time_to_minute(daily.get(i)) >= 0) {
+                    orderedDaily.add(daily.get(i))
+                    useValidTime -= time_to_minute(daily.get(i))
+                }
+                else {
+                    orderedDaily.add(DailySchedule(100, 1, 2022, 12,26,"시간부족",false, "05","05","12","26"))
+                    break
+                }
+            }
+        }
+    }
+
+    //daily에 데일리 스케줄 저장되어있음
+    //dailyId, day, year, month, date, name, important, timeH, timeM, deadlineMonth, deadlineDate
+    private fun sort_daily() {
+        for(i in 0 until daily.size) {
+            var min_weight = find_weight(daily.get(i))
+            var min_index = i
+
+            for (j in i until daily.size) {
+                var temp_weight = find_weight(daily.get(j))
+                if (min_weight > temp_weight) {
+                    min_weight = temp_weight
+                    min_index = j
+                }
+            }
+
+            var temp_work = daily.get(min_index)
+            daily.set(min_index, daily.get(i))
+            daily.set(i, temp_work)
+        }
+    }
+
+    //오늘날짜 : date.month 이런 식 (date에 있음)
+    //일정의 데드라인 달 : deadlineMonth
+    private fun find_weight(dailySchedule: DailySchedule) : Int {
+        var sample_weight = 0
+        sample_weight += if ((dailySchedule.deadlineMonth.toInt() - date.monthOfYear) >= 0 ) (dailySchedule.deadlineMonth.toInt() - date.monthOfYear) else 12 - (dailySchedule.deadlineMonth.toInt() - date.monthOfYear)
+        sample_weight += if ((dailySchedule.deadlineDate.toInt() - date.dayOfMonth) >= 0) (dailySchedule.deadlineDate.toInt() - date.dayOfMonth) else 31 - (dailySchedule.deadlineDate.toInt() - date.dayOfMonth)
+        sample_weight *= 1000
+        sample_weight += dailySchedule.timeH.toInt() * 60 + dailySchedule.timeM.toInt()
+        return sample_weight
+    }
+
+    private fun find_daily_all() : Int {
+        var daily_all = 0
+        for (i in daily) {
+            daily_all += i.timeH.toInt() * 60 + i.timeM.toInt()
+        }
+        return daily_all
+    }
+
+    private fun print_important() {
+        var i = 0
+        while (i < daily.size && useValidTime > 0) {
+            var work = time_to_minute(daily.get(i))
+
+            if (daily.get(i).important) {
+                orderedDaily.add(daily.get(i))
+                daily.removeAt(i)
+                useValidTime -= work
+            }
+            i += 1
+        }
+    }
+
+    private fun time_to_minute(i : DailySchedule) : Int {
+        return i.timeH.toInt() * 60 + i.timeM.toInt()
     }
 }
