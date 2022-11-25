@@ -23,6 +23,8 @@ import com.example.boss.databinding.FragmentDailyScheduleBinding
 import com.example.boss.screens.daily.adapter.DailyFixedScheduleRVAdapter
 import com.example.boss.screens.daily.adapter.DailyScheduleRVAdapter
 import org.joda.time.DateTime
+import kotlin.math.min
+import kotlin.math.sign
 
 class DailyScheduleFragment : Fragment() {
 
@@ -66,6 +68,17 @@ class DailyScheduleFragment : Fragment() {
     private val dailyTodoRVAdapter = DailyScheduleRVAdapter()
     private var daily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
     private var orderedDaily : ArrayList<OrderedSchedule> = ArrayList<OrderedSchedule>()
+
+    var now_fixed = 0
+    var fixed_num = 0
+    private var now_time_H : Int = 0
+    private var now_time_M : Int = 0
+
+    var result_start_H = arrayListOf<String>()
+    var result_start_M = arrayListOf<String>()
+    var result_end_H =  arrayListOf<String>()
+    var result_end_M =  arrayListOf<String>()
+    var result_work = arrayListOf<Int>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -147,6 +160,7 @@ class DailyScheduleFragment : Fragment() {
         } catch (e : InterruptedException) {
             e.printStackTrace()
         }
+        fixed_num = fixed.size
         getValidTime()
 
         var forDailyDB : Thread = Thread {
@@ -175,10 +189,15 @@ class DailyScheduleFragment : Fragment() {
         startM = pref.getString(SLEEPSTARTM,"00")!!
         endH = pref.getString(SLEEPENDH,"00")!!
         endM = pref.getString(SLEEPENDM,"00")!!
+
+        now_time_H = endH.toInt();
+        now_time_M = endM.toInt();
     }
 
     private fun sumSleepTime(){
-        sleepTime = (endH.toInt() * 60 + endM.toInt()) - (startH.toInt() * 60 + startM.toInt())
+        var today = 24 * 60 - (startH.toInt() * 60 + startM.toInt())
+        var nextday = endH.toInt() * 60 + endM.toInt()
+        sleepTime = today + nextday
         Log.d("SUM_SLEEP", sleepTime.toString())
         //Log.d("SLEEPCHECK", sleepTime.toString() + "총 이거고 시간은 " + startH.toInt() + "시" + startM.toInt() + "분")
     }
@@ -218,36 +237,28 @@ class DailyScheduleFragment : Fragment() {
     //getDailyFromDB에서 데이터 받아오기 끝난 다음에 실행해야 됨
     private fun print_daily_work(){
         sort_daily()
+        put_important_result()
+        put_result()
 
-        var daily_all = find_daily_all()
+        Log.d("RESULT_DAILY", daily.toString())
+        Log.d("RESULT_WORK", result_work.toString())
+        Log.d("RESULT_START_H", result_start_H.toString())
+        Log.d("RESULT_START_M", result_start_M.toString())
+        Log.d("RESULT_END_H", result_end_H.toString())
+        Log.d("RESULT_END_M", result_end_M.toString())
 
-        if (daily_all <= useValidTime) {
-            print_important()
-
-            for (work in daily) {
-                orderedDaily.add(
-                    OrderedSchedule(work.dailyId, work.name, "00","00","00","00",work.timeH.toInt() * 60 + work.timeM
-                    .toInt())
-                )
-            }
-        }
-        else {
-            print_important()
-
-            for (i in 0 until daily.size) {
-                var temp = daily.get(i)
-                if (useValidTime - time_to_minute(daily.get(i)) >= 0) {
-                    orderedDaily.add(OrderedSchedule(temp.dailyId, temp.name, "00","00","00","00",temp.timeH.toInt() * 60 + temp.timeM
-                    .toInt()))
-                    useValidTime -= time_to_minute(daily.get(i))
-                }
-                else {
-                    orderedDaily.add(OrderedSchedule(temp.dailyId, temp.name, "시간","부족","시간","부족",temp.timeH.toInt() * 60 + temp.timeM
-                        .toInt()))
-                    break
-                }
-            }
-        }
+//        for (i in 0 until result_work.size) {
+//            var original = daily.get(result_work.get(i))
+//            var ordered : OrderedSchedule = OrderedSchedule(
+//                original.dailyId,
+//                original.name,
+//                result_start_H.get(i),
+//                result_start_M.get(i),
+//                result_end_H.get(i),
+//                result_end_M.get(i),
+//                100)
+//            orderedDaily.add(ordered)
+//        }
     }
 
     //daily에 데일리 스케줄 저장되어있음
@@ -271,6 +282,179 @@ class DailyScheduleFragment : Fragment() {
         }
     }
 
+    private fun put_important_result() {
+        var i = 0
+
+        while (i < daily.size && !isSleep()) {
+            var work = time_to_minute(daily.get(i))
+            var work_H = work / 60
+            var work_M = work % 60
+            var now_fixed_num = now_fixed
+            if (now_fixed_num < fixed.size) {
+                if (result_start_H.size > result_end_H.size) {
+                    result_end_H.add(now_time_H.toString())
+                    result_end_M.add(now_time_M.toString())
+                }
+
+                if (daily.get(i).important == true) {
+                    result_start_H.add(now_time_H.toString())
+                    result_start_M.add(now_time_M.toString())
+                    result_work.add(i)
+
+                    doDaily(work_H, work_M)
+
+                    if (isConflict()) {
+                        for (k in now_fixed_num until fixed_num) {
+                            if (fixed.get(k).startH.toInt() < now_time_H || (fixed.get(k).startH.toInt() == now_time_H && fixed.get(k).startM.toInt() < now_time_M)) {
+                                if (isSleep()) {
+                                    result_end_H.add(startH)
+                                    result_end_M.add(startM)
+                                    break
+                                }
+
+                                result_end_H.add(fixed.get(k).startH)
+                                result_end_M.add(fixed.get(k).startM)
+
+                                result_start_H.add(fixed.get(k).endH)
+                                result_start_M.add(fixed.get(k).endM)
+                                result_work.add(i)
+
+                                updateNowTime(k)
+                                now_fixed += 1
+                            }
+                            else {
+                                if (isSleep()) {
+                                    result_end_H.add(startH)
+                                    result_end_M.add(startM)
+                                    break
+                                }
+
+                                result_end_H.add(now_time_H.toString())
+                                result_end_M.add(now_time_M.toString())
+                                break
+                            }
+                        }
+                    }
+                    else {
+                        result_end_H.add(now_time_H.toString())
+                        result_end_M.add(now_time_M.toString())
+                    }
+                }
+                i += 1
+            }
+        }
+
+        if (result_start_H.size > result_end_H.size) {
+            result_end_H.add(now_time_H.toString())
+            result_end_M.add(now_time_M.toString())
+        }
+    }
+
+    private fun put_result() {
+        var i = 0
+
+        while (i < daily.size && !isSleep()) {
+            var work = time_to_minute(daily.get(i))
+            var work_H = work / 60
+            var work_M = work % 60
+            var now_fixed_num = now_fixed
+            if (now_fixed_num < fixed.size) {
+                if (result_start_H.size > result_end_H.size) {
+                    result_end_H.add(now_time_H.toString())
+                    result_end_M.add(now_time_M.toString())
+                }
+
+                if (daily.get(i).important == false) {
+                    result_start_H.add(now_time_H.toString())
+                    result_start_M.add(now_time_M.toString())
+                    result_work.add(i)
+
+                    doDaily(work_H, work_M)
+
+                    if (isConflict()) {
+                        for (k in now_fixed_num until fixed_num) {
+                            if (fixed.get(k).startH.toInt() < now_time_H || (fixed.get(k).startH.toInt() == now_time_H && fixed.get(k).startM.toInt() < now_time_M)) {
+                                if (isSleep()) {
+                                    result_end_H.add(startH)
+                                    result_end_M.add(startM)
+                                    break
+                                }
+
+                                result_end_H.add(fixed.get(k).startH)
+                                result_end_M.add(fixed.get(k).startM)
+
+                                result_start_H.add(fixed.get(k).endH)
+                                result_start_M.add(fixed.get(k).endM)
+                                result_work.add(i)
+
+                                updateNowTime(k)
+                                now_fixed += 1
+                            }
+                            else {
+                                if (isSleep()) {
+                                    result_end_H.add(startH)
+                                    result_end_M.add(startM)
+                                    break
+                                }
+
+                                result_end_H.add(now_time_H.toString())
+                                result_end_M.add(now_time_M.toString())
+                                break
+                            }
+                        }
+                    }
+                    else {
+                        result_end_H.add(now_time_H.toString())
+                        result_end_M.add(now_time_M.toString())
+                    }
+                }
+                i += 1
+            }
+        }
+
+        if (result_start_H.size > result_end_H.size) {
+            result_end_H.add(now_time_H.toString())
+            result_end_M.add(now_time_M.toString())
+        }
+    }
+
+
+
+    //일정 진행시간이 수면시간을 넘어가는지 판단, 넘어가면 true
+    private fun isSleep() : Boolean {
+        if (now_time_H > startH.toInt() || (now_time_H == startH.toInt() && now_time_M > startM.toInt())) {
+            return true
+        }
+        return false
+    }
+
+    private fun doDaily(hour : Int, minute : Int) {
+        if (now_time_M + minute >= 60) {
+            now_time_H = now_time_H + hour + 1
+            now_time_M = now_time_M + minute - 60
+        } else {
+            now_time_H = now_time_H + hour
+            now_time_M = now_time_M + minute
+        }
+    }
+
+    private fun isConflict() : Boolean {
+        if (now_time_H > fixed.get(now_fixed).startH.toInt() || (now_time_H == fixed.get(now_fixed).startH.toInt() && now_time_M > fixed.get(now_fixed).startM.toInt())) {
+            return true
+        }
+        return false
+    }
+
+    private fun updateNowTime(i : Int) {
+        if (now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() >= 60) {
+            now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt() + 1
+            now_time_M = now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() - 60
+        } else {
+            now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt()
+            now_time_M = now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt()
+        }
+    }
+
     //오늘날짜 : date.month 이런 식 (date에 있음)
     //일정의 데드라인 달 : deadlineMonth
     private fun find_weight(dailySchedule: DailySchedule) : Int {
@@ -280,29 +464,6 @@ class DailyScheduleFragment : Fragment() {
         sample_weight *= 1000
         sample_weight += dailySchedule.timeH.toInt() * 60 + dailySchedule.timeM.toInt()
         return sample_weight
-    }
-
-    private fun find_daily_all() : Int {
-        var daily_all = 0
-        for (i in daily) {
-            daily_all += i.timeH.toInt() * 60 + i.timeM.toInt()
-        }
-        return daily_all
-    }
-
-    private fun print_important() {
-        var i = 0
-        while (i < daily.size && useValidTime > 0) {
-            var work = time_to_minute(daily.get(i))
-            if (daily.get(i).important) {
-                var temp = daily.get(i)
-                orderedDaily.add(OrderedSchedule(temp.dailyId, temp.name, "00","00","00","00",temp.timeH.toInt() * 60 + temp.timeM
-                    .toInt()))
-                daily.removeAt(i)
-                useValidTime -= work
-            }
-            i += 1
-        }
     }
 
     private fun time_to_minute(i : DailySchedule) : Int {
