@@ -2,7 +2,7 @@ val now_year = 2022
 val now_month = 11
 val now_date = 21
 
-val fixed_start_H : Array<String> = arrayOf("09", "12", "16", "22")
+val fixed_start_H : Array<String> = arrayOf("09", "12", "16", "22") // 고정일정의 마지막은 sleep_start
 val fixed_start_M : Array<String> = arrayOf("00", "10", "30", "00")
 val fixed_end_H : Array<String> = arrayOf("09", "13", "18")
 val fixed_end_M : Array<String> = arrayOf("50", "00", "30")
@@ -17,6 +17,7 @@ val sleep_start_M = 0
 val sleep_end_H = 8
 val sleep_end_M = 0
 
+//고정일정 
 val sample_deadLine_month : Array<Int> = arrayOf(12, 11, 11, 1)
 val sample_deadLine_date : Array<Int> = arrayOf(1, 22, 23, 1)
 val sample_timeH : ArrayList<String> = arrayListOf("02", "01", "03", "01")
@@ -46,7 +47,7 @@ fun find_weight(i : Int) : Int{
     return sample_weight
 }
 
-//sample_work, sample_important, sample_timeH, sample_timeM 를 가중치에 작은 순으로 정렬
+//sample_work, sample_important, sample_timeH, sample_timeM 를 가중치가 작은 순으로 정렬
 fun sort_daily(){
     for(i in 0 until sample_num){
         var min_weight = find_weight(i)
@@ -87,7 +88,7 @@ fun time_to_minute(i : Int) : Int{
 //Daily일정을 진행함
 fun doDaily(hour : Int, minute : Int){
 
-    if(now_time_M + minute >= 60){
+    if(now_time_M + minute >= 60){ 
         now_time_H = now_time_H + hour + 1
         now_time_M = now_time_M + minute - 60
     }
@@ -102,12 +103,12 @@ fun doDaily(hour : Int, minute : Int){
 fun isConflict() : Boolean{
 
     if(now_time_H > fixed_start_H[now_fixed].toInt() || (now_time_H == fixed_start_H[now_fixed].toInt() && now_time_M > fixed_start_M[now_fixed].toInt())) {
-        return true
+        return true //겹친다면 true 반환
     }
     return false
 }
 
-//고정 일정과 충돌이 있을경우 now_time을 업데이트함
+//고정 일정과 충돌이 있을경우 now_time을 업데이트함 -> 기존 now_time에 충돌 일어난 고정 일정 시간만큼 더함.
 fun updateNowTime(i : Int){
 
     if(now_time_M - fixed_start_M[i].toInt() + fixed_end_M[i].toInt() >= 60){
@@ -121,48 +122,48 @@ fun updateNowTime(i : Int){
 
 }
 
-//일정 진행시간이 수면시간을 넘어가는지 판단. 넘어가면 true
+//일정 진행시간이 수면시간을 넘어가는지 판단. 넘어가면 true -> 
 fun isSleep() : Boolean{
     if(now_time_H > sleep_start_H || (now_time_H == sleep_start_H && now_time_M > sleep_start_M)){
-        return true
+        return true // now_time이 수면시간을 넘어갈경우 true를 반환 -> 당일에 일정을 다 못끝낸다는 것을 의미
     }
     return false
 }
 
 //중요일정 먼저 result배열에 저장
-//now_time이 sleep_start를 넘어가는지를 통해 하루 안에 일정들을 다 소화할 수 있는지 판단.
+//now_time이 sleep_start를 넘어가는지를 통해(isSleep()를 통해) 하루 안에 일정들을 다 소화할 수 있는지 판단.
 fun put_important_result(){
 
     var i = 0
 
-    while(i < sample_num && !isSleep()){
+    while(i < sample_num && !isSleep()){ // 모든 일정을 다 끝내거나 수면시간을 넘지 않을 때까지
 
-        var work = time_to_minute(i)
+        var work = time_to_minute(i) //단일 daily일정을 X분으로 저장
         var work_H = work / 60
         var work_M = work % 60
-        var now_fixed_num = now_fixed
+        var now_fixed_num = now_fixed // now_fixed(곧 진행할 고정일정의 번호)는 업데이트할 예정이므로 반복문 돌릴 변수에 미리 저장
 
-        if(result_start_H.size > result_end_H.size){
+        if(result_start_H.size > result_end_H.size){ // 175줄에서 result_start에 대한 result_end
             result_end_H.add(now_time_H.toString())
             result_end_M.add(now_time_M.toString())
         }
 
-        if(sample_important[i]==true){
+        if(sample_important[i]==true){ //만약 중요한 일정이라면
 
-            result_start_H.add(now_time_H.toString())
+            result_start_H.add(now_time_H.toString()) //result_start에 저장하고 
             result_start_M.add(now_time_M.toString())
             result_work.add(sample_work[i])
 
-            doDaily(work_H, work_M)
+            doDaily(work_H, work_M) //일단 일정 진행
 
-            if(isConflict()){
+            if(isConflict()){ //고정일정과 충돌이 발생한다면
 
                 //하나 이상의 고정일정에 대해 겹치는지 확인
                 for(k in now_fixed_num until fixed_num){
-
+                    //다음 고정 일정 시간의 시작시간이 현재 시간보다 작다면 -> 충돌이 계속 발생함을 의미
                     if(fixed_start_H[k].toInt() < now_time_H || (fixed_start_H[k].toInt() == now_time_H && fixed_start_M[k].toInt() < now_time_M)){
 
-                        if(isSleep()){
+                        if(isSleep()){ //수면시간이 지났다면
                             result_end_H.add(sleep_start_H.toString())
                             result_end_M.add(sleep_start_M.toString())
                             break
@@ -180,7 +181,7 @@ fun put_important_result(){
                     }
                     else{
 
-                        if(isSleep()){
+                        if(isSleep()){ //수면시간이 지났다면
                             result_end_H.add(sleep_start_H.toString())
                             result_end_M.add(sleep_start_M.toString())
                             break
@@ -194,7 +195,7 @@ fun put_important_result(){
                 }
 
             }
-            else {
+            else { //고정일정과 충돌이 없을경우 -> now_time이 그냥 result_end시간.
 
                 result_end_H.add(now_time_H.toString())
                 result_end_M.add(now_time_M.toString())
@@ -215,9 +216,9 @@ fun put_important_result(){
 //일반 일정들을 result배열에 저장
 fun put_result(){
 
-    for(i in 0 until sample_num){
+    for(i in 0 until sample_num){ //일정의 개수만큼.(중요일정은 이미 삭제된 상태)
 
-        var work = time_to_minute(i)
+        var work = time_to_minute(i) //이하는 중요일정 부분과 
         var work_H = work / 60
         var work_M = work % 60
         var now_fixed_num = now_fixed
