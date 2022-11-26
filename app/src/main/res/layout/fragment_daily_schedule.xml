@@ -161,7 +161,7 @@
                         android:fontFamily="@font/librefranklin_semibold"
                         android:textAlignment="center"
                         android:textColor="@color/black"
-                        android:text="잔여 예상 소요시간" />
+                        android:text="일정의 잔여시간" />
                 </LinearLayout>
 
                 <View

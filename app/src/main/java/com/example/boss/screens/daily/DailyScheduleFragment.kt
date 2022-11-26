@@ -45,10 +45,10 @@ class DailyScheduleFragment : Fragment() {
 
     private var dateTitle : String = "YYYY.MM.DD (E)"
 
-    var startH = ""
-    var startM = ""
-    var endH = ""
-    var endM = ""
+    var sleepStartH = ""
+    var sleepStartM = ""
+    var sleepEndH = ""
+    var sleepEndM = ""
 
     var sleepTime : Int = 0
     var fixedTime : Int = 0
@@ -67,18 +67,24 @@ class DailyScheduleFragment : Fragment() {
 
     private val dailyTodoRVAdapter = DailyScheduleRVAdapter()
     private var daily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
+    private var useDaily : ArrayList<DailySchedule> = ArrayList<DailySchedule>()
     private var orderedDaily : ArrayList<OrderedSchedule> = ArrayList<OrderedSchedule>()
 
-    var now_fixed = 0
-    var fixed_num = 0
-    private var now_time_H : Int = 0
-    private var now_time_M : Int = 0
+    private var now_fixed = 0
+    private var fixed_num = 0
+    private var sample_num = 0
+
+    private var now_time_H = 0
+    private var now_time_M = 0
+
+    var sample_work = arrayListOf<Int>()
 
     var result_start_H = arrayListOf<String>()
     var result_start_M = arrayListOf<String>()
-    var result_end_H =  arrayListOf<String>()
-    var result_end_M =  arrayListOf<String>()
+    var result_end_H = arrayListOf<String>()
+    var result_end_M = arrayListOf<String>()
     var result_work = arrayListOf<Int>()
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -115,8 +121,23 @@ class DailyScheduleFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        orderedDaily.clear()
+        initValue()
         setAdapter()
+    }
+
+    private fun initValue() {
+        fixed.clear()
+        fixed_num = 0
+        daily.clear()
+        sample_num = 0
+        useDaily.clear()
+        orderedDaily.clear()
+        sample_work.clear()
+        result_work.clear()
+        result_start_H.clear()
+        result_start_M.clear()
+        result_end_H.clear()
+        result_end_M.clear()
     }
 
     private fun clickHandler() {
@@ -132,6 +153,9 @@ class DailyScheduleFragment : Fragment() {
 
         binding.dailyTodoRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.dailyTodoRv.adapter = dailyTodoRVAdapter
+
+        now_time_H = sleepEndH.toInt()
+        now_time_M = sleepEndM.toInt()
 
         getFixedAndDailyFromDB()
     }
@@ -160,15 +184,13 @@ class DailyScheduleFragment : Fragment() {
         } catch (e : InterruptedException) {
             e.printStackTrace()
         }
+        addSleepOnStart()
         fixed_num = fixed.size
         getValidTime()
 
+
         var forDailyDB : Thread = Thread {
             daily = db.dailyDao.getDateDaily(arg.year, arg.month, arg.date) as ArrayList
-//            dailyTodoRVAdapter.addDaily(daily)
-//            requireActivity().runOnUiThread {
-//                dailyTodoRVAdapter.notifyDataSetChanged()
-//            }
         }
         forDailyDB.start()
 
@@ -177,26 +199,38 @@ class DailyScheduleFragment : Fragment() {
         } catch (e : InterruptedException) {
             e.printStackTrace()
         }
+        Log.d("GET_DAILY", daily.toString())
+        sample_num = daily.size
+        useDaily.clear()
+        useDaily.addAll(daily)
+        putDailyNumToSampleWork()
+        orderedDaily.clear()
+
         print_daily_work()
+        //dailyToOrdered()
         dailyTodoRVAdapter.addDaily(orderedDaily)
         dailyTodoRVAdapter.notifyDataSetChanged()
 
     }
 
+    private fun putDailyNumToSampleWork() {
+        for (i in 0 until daily.size) {
+            sample_work.add(i)
+        }
+        Log.d("SAMPLE_WORK_INIT", sample_work.toString())
+    }
+
 
     private fun getPref(){
-        startH = pref.getString(SLEEPSTARTH,"00")!!
-        startM = pref.getString(SLEEPSTARTM,"00")!!
-        endH = pref.getString(SLEEPENDH,"00")!!
-        endM = pref.getString(SLEEPENDM,"00")!!
-
-        now_time_H = endH.toInt();
-        now_time_M = endM.toInt();
+        sleepStartH = pref.getString(SLEEPSTARTH,"00")!!
+        sleepStartM = pref.getString(SLEEPSTARTM,"00")!!
+        sleepEndH = pref.getString(SLEEPENDH,"00")!!
+        sleepEndM = pref.getString(SLEEPENDM,"00")!!
     }
 
     private fun sumSleepTime(){
-        var today = 24 * 60 - (startH.toInt() * 60 + startM.toInt())
-        var nextday = endH.toInt() * 60 + endM.toInt()
+        var today = 24 * 60 - (sleepStartH.toInt() * 60 + sleepStartM.toInt())
+        var nextday = sleepEndH.toInt() * 60 + sleepEndM.toInt()
         sleepTime = today + nextday
         Log.d("SUM_SLEEP", sleepTime.toString())
         //Log.d("SLEEPCHECK", sleepTime.toString() + "총 이거고 시간은 " + startH.toInt() + "시" + startM.toInt() + "분")
@@ -205,11 +239,11 @@ class DailyScheduleFragment : Fragment() {
     private fun sumFixedTime() {
         fixedTime = 0
         var time : Int = 0
-        for (i in fixed) {
+        for (i in 0 until fixed.size - 1) {
             Log.d("SUM_EACH_FIXED_I", i.toString())
-            time = (i.endH.toInt() * 60 + i.endM.toInt()) - (i.startH.toInt() * 60 + i.startM.toInt())
+            time = (fixed.get(i).endH.toInt() * 60 + fixed.get(i).endM.toInt()) - (fixed.get(i).startH.toInt() * 60 + fixed.get(i).startM.toInt())
             fixedTime = fixedTime + time
-            Log.d("SUM_EACH_FIXED", fixedTime.toString())
+            Log.d("SUM_EACH_FIXED", time.toString())
         }
         Log.d("SUM_FIXED", fixedTime.toString())
 
@@ -234,42 +268,26 @@ class DailyScheduleFragment : Fragment() {
         binding.dailyScheduleValidTime.text = validH + "시간 " + validM + "분"
     }
 
-    //getDailyFromDB에서 데이터 받아오기 끝난 다음에 실행해야 됨
-    private fun print_daily_work(){
-        sort_daily()
-        put_important_result()
-        put_result()
-
-        Log.d("RESULT_DAILY", daily.toString())
-        Log.d("RESULT_WORK", result_work.toString())
-        Log.d("RESULT_START_H", result_start_H.toString())
-        Log.d("RESULT_START_M", result_start_M.toString())
-        Log.d("RESULT_END_H", result_end_H.toString())
-        Log.d("RESULT_END_M", result_end_M.toString())
-
-//        for (i in 0 until result_work.size) {
-//            var original = daily.get(result_work.get(i))
-//            var ordered : OrderedSchedule = OrderedSchedule(
-//                original.dailyId,
-//                original.name,
-//                result_start_H.get(i),
-//                result_start_M.get(i),
-//                result_end_H.get(i),
-//                result_end_M.get(i),
-//                100)
-//            orderedDaily.add(ordered)
-//        }
+    private fun addSleepOnStart() {
+        fixed.add(FixedSchedule(100, day,"Sleep", sleepStartH, sleepStartM, sleepEndH, sleepEndM))
     }
 
-    //daily에 데일리 스케줄 저장되어있음
-    //dailyId, day, year, month, date, name, important, timeH, timeM, deadlineMonth, deadlineDate
+    private fun find_weight(i : Int) : Int {
+        var sample_weight = 0
+        sample_weight += if ((daily.get(i).deadlineMonth.toInt() - date.monthOfYear) >= 0) (daily.get(i).deadlineMonth.toInt() - date.monthOfYear) else 12 - (daily.get(i).deadlineMonth.toInt() - date.monthOfYear)
+        sample_weight += if ((daily.get(i).deadlineDate.toInt() - date.dayOfMonth) >= 0) (daily.get(i).deadlineDate.toInt() - date.dayOfMonth) else 31 - (daily.get(i).deadlineDate.toInt() - date.dayOfMonth)
+        sample_weight *= 1000
+        sample_weight += daily.get(i).timeH.toInt() * 60 + daily.get(i).timeM.toInt()
+        return sample_weight
+    }
+
     private fun sort_daily() {
-        for(i in 0 until daily.size) {
-            var min_weight = find_weight(daily.get(i))
+        for (i in 0 until sample_num) {
+            var min_weight = find_weight(i)
             var min_index = i
 
-            for (j in i until daily.size) {
-                var temp_weight = find_weight(daily.get(j))
+            for (j in i until sample_num) {
+                var temp_weight = find_weight(j)
                 if (min_weight > temp_weight) {
                     min_weight = temp_weight
                     min_index = j
@@ -279,166 +297,27 @@ class DailyScheduleFragment : Fragment() {
             var temp_work = daily.get(min_index)
             daily.set(min_index, daily.get(i))
             daily.set(i, temp_work)
+
+            var temp_sample = sample_work.get(min_index)
+            sample_work.set(min_index, sample_work.get(i))
+            sample_work.set(i, temp_sample)
         }
-    }
-
-    private fun put_important_result() {
-        var i = 0
-
-        while (i < daily.size && !isSleep()) {
-            var work = time_to_minute(daily.get(i))
-            var work_H = work / 60
-            var work_M = work % 60
-            var now_fixed_num = now_fixed
-            if (now_fixed_num < fixed.size) {
-                if (result_start_H.size > result_end_H.size) {
-                    result_end_H.add(now_time_H.toString())
-                    result_end_M.add(now_time_M.toString())
-                }
-
-                if (daily.get(i).important == true) {
-                    result_start_H.add(now_time_H.toString())
-                    result_start_M.add(now_time_M.toString())
-                    result_work.add(i)
-
-                    doDaily(work_H, work_M)
-
-                    if (isConflict()) {
-                        for (k in now_fixed_num until fixed_num) {
-                            if (fixed.get(k).startH.toInt() < now_time_H || (fixed.get(k).startH.toInt() == now_time_H && fixed.get(k).startM.toInt() < now_time_M)) {
-                                if (isSleep()) {
-                                    result_end_H.add(startH)
-                                    result_end_M.add(startM)
-                                    break
-                                }
-
-                                result_end_H.add(fixed.get(k).startH)
-                                result_end_M.add(fixed.get(k).startM)
-
-                                result_start_H.add(fixed.get(k).endH)
-                                result_start_M.add(fixed.get(k).endM)
-                                result_work.add(i)
-
-                                updateNowTime(k)
-                                now_fixed += 1
-                            }
-                            else {
-                                if (isSleep()) {
-                                    result_end_H.add(startH)
-                                    result_end_M.add(startM)
-                                    break
-                                }
-
-                                result_end_H.add(now_time_H.toString())
-                                result_end_M.add(now_time_M.toString())
-                                break
-                            }
-                        }
-                    }
-                    else {
-                        result_end_H.add(now_time_H.toString())
-                        result_end_M.add(now_time_M.toString())
-                    }
-                }
-                i += 1
-            }
-        }
-
-        if (result_start_H.size > result_end_H.size) {
-            result_end_H.add(now_time_H.toString())
-            result_end_M.add(now_time_M.toString())
-        }
-    }
-
-    private fun put_result() {
-        var i = 0
-
-        while (i < daily.size && !isSleep()) {
-            var work = time_to_minute(daily.get(i))
-            var work_H = work / 60
-            var work_M = work % 60
-            var now_fixed_num = now_fixed
-            if (now_fixed_num < fixed.size) {
-                if (result_start_H.size > result_end_H.size) {
-                    result_end_H.add(now_time_H.toString())
-                    result_end_M.add(now_time_M.toString())
-                }
-
-                if (daily.get(i).important == false) {
-                    result_start_H.add(now_time_H.toString())
-                    result_start_M.add(now_time_M.toString())
-                    result_work.add(i)
-
-                    doDaily(work_H, work_M)
-
-                    if (isConflict()) {
-                        for (k in now_fixed_num until fixed_num) {
-                            if (fixed.get(k).startH.toInt() < now_time_H || (fixed.get(k).startH.toInt() == now_time_H && fixed.get(k).startM.toInt() < now_time_M)) {
-                                if (isSleep()) {
-                                    result_end_H.add(startH)
-                                    result_end_M.add(startM)
-                                    break
-                                }
-
-                                result_end_H.add(fixed.get(k).startH)
-                                result_end_M.add(fixed.get(k).startM)
-
-                                result_start_H.add(fixed.get(k).endH)
-                                result_start_M.add(fixed.get(k).endM)
-                                result_work.add(i)
-
-                                updateNowTime(k)
-                                now_fixed += 1
-                            }
-                            else {
-                                if (isSleep()) {
-                                    result_end_H.add(startH)
-                                    result_end_M.add(startM)
-                                    break
-                                }
-
-                                result_end_H.add(now_time_H.toString())
-                                result_end_M.add(now_time_M.toString())
-                                break
-                            }
-                        }
-                    }
-                    else {
-                        result_end_H.add(now_time_H.toString())
-                        result_end_M.add(now_time_M.toString())
-                    }
-                }
-                i += 1
-            }
-        }
-
-        if (result_start_H.size > result_end_H.size) {
-            result_end_H.add(now_time_H.toString())
-            result_end_M.add(now_time_M.toString())
-        }
-    }
-
-
-
-    //일정 진행시간이 수면시간을 넘어가는지 판단, 넘어가면 true
-    private fun isSleep() : Boolean {
-        if (now_time_H > startH.toInt() || (now_time_H == startH.toInt() && now_time_M > startM.toInt())) {
-            return true
-        }
-        return false
     }
 
     private fun doDaily(hour : Int, minute : Int) {
         if (now_time_M + minute >= 60) {
             now_time_H = now_time_H + hour + 1
             now_time_M = now_time_M + minute - 60
-        } else {
+        }
+        else {
             now_time_H = now_time_H + hour
             now_time_M = now_time_M + minute
         }
     }
 
     private fun isConflict() : Boolean {
+        Log.d("ISCONFLICT", fixed.get(now_fixed).toString())
+        Log.d("ISCONFLICT_NOW", now_time_H.toString() + "시 " + now_time_M.toString() + "분" )
         if (now_time_H > fixed.get(now_fixed).startH.toInt() || (now_time_H == fixed.get(now_fixed).startH.toInt() && now_time_M > fixed.get(now_fixed).startM.toInt())) {
             return true
         }
@@ -449,24 +328,309 @@ class DailyScheduleFragment : Fragment() {
         if (now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() >= 60) {
             now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt() + 1
             now_time_M = now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() - 60
-        } else {
+        }
+        else {
             now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt()
             now_time_M = now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt()
         }
     }
 
-    //오늘날짜 : date.month 이런 식 (date에 있음)
-    //일정의 데드라인 달 : deadlineMonth
-    private fun find_weight(dailySchedule: DailySchedule) : Int {
-        var sample_weight = 0
-        sample_weight += if ((dailySchedule.deadlineMonth.toInt() - date.monthOfYear) >= 0 ) (dailySchedule.deadlineMonth.toInt() - date.monthOfYear) else 12 - (dailySchedule.deadlineMonth.toInt() - date.monthOfYear)
-        sample_weight += if ((dailySchedule.deadlineDate.toInt() - date.dayOfMonth) >= 0) (dailySchedule.deadlineDate.toInt() - date.dayOfMonth) else 31 - (dailySchedule.deadlineDate.toInt() - date.dayOfMonth)
-        sample_weight *= 1000
-        sample_weight += dailySchedule.timeH.toInt() * 60 + dailySchedule.timeM.toInt()
-        return sample_weight
+    private fun isSleep() : Boolean {
+        if (now_time_H > sleepStartH.toInt() || (now_time_H == sleepStartH.toInt() && now_time_M > sleepStartM.toInt())) {
+            return true
+        }
+        return false
     }
 
-    private fun time_to_minute(i : DailySchedule) : Int {
-        return i.timeH.toInt() * 60 + i.timeM.toInt()
+    private fun put_important_result() {
+        var i = 0
+        var delete = false
+
+        Log.d("PUT_IMPO_START_SN", sample_num.toString())
+        while (i < sample_num && !isSleep()) {
+            delete = false
+            var work_H = daily.get(i).timeH.toInt()
+            var work_M = daily.get(i).timeM.toInt()
+            var now_fixed_num = now_fixed
+            Log.d("PUT_IMFO_START_NFN", now_fixed_num.toString())
+
+            if (result_start_H.size > result_end_H.size) {
+                result_end_H.add(now_time_H.toString())
+                result_end_M.add(now_time_M.toString())
+                Log.d("PUT_IMPO_F_SH", result_start_H.toString())
+                Log.d("PUT_IMPO_F_SM", result_start_M.toString())
+                Log.d("PUT_IMPO_F_ENDH", result_end_H.toString())
+                Log.d("PUT_IMPO_F_ENDM", result_end_M.toString())
+                Log.d("PUT_IMPO_F_WORK", result_work.toString())
+            }
+
+            if (daily.get(i).important == true) {
+                result_start_H.add(now_time_H.toString())
+                result_start_M.add(now_time_M.toString())
+                result_work.add(sample_work.get(i))
+                Log.d("PUT_IMPO_S_SH", result_start_H.toString())
+                Log.d("PUT_IMPO_S_SM", result_start_M.toString())
+                Log.d("PUT_IMPO_S_ENDH", result_end_H.toString())
+                Log.d("PUT_IMPO_S_ENDM", result_end_M.toString())
+                Log.d("PUT_IMPO_S_WORK", result_work.toString())
+
+                doDaily(work_H, work_M)
+
+                if (isConflict()) {
+                    for (k in now_fixed_num until fixed_num) {
+                        if (fixed.get(k).startH.toInt() < now_time_H || (fixed.get(k).startH.toInt() == now_time_H && fixed.get(k).startM.toInt() < now_time_M)) {
+                            if (isSleep()) {
+                                result_end_H.add(sleepStartH.toString())
+                                result_end_M.add(sleepStartM.toString())
+                                Log.d("PUT_IMPO_T_SH", result_start_H.toString())
+                                Log.d("PUT_IMPO_T_SM", result_start_M.toString())
+                                Log.d("PUT_IMPO_T_ENDH", result_end_H.toString())
+                                Log.d("PUT_IMPO_T_ENDM", result_end_M.toString())
+                                Log.d("PUT_IMPO_T_WORK", result_work.toString())
+                                break
+                            }
+
+                            result_end_H.add(fixed.get(k).startH)
+                            result_end_M.add(fixed.get(k).startM)
+                            Log.d("PUT_IMPO_Fo_SH", result_start_H.toString())
+                            Log.d("PUT_IMPO_Fo_SM", result_start_M.toString())
+                            Log.d("PUT_IMPO_Fo_ENDH", result_end_H.toString())
+                            Log.d("PUT_IMPO_Fo_ENDM", result_end_M.toString())
+                            Log.d("PUT_IMPO_Fo_WORK", result_work.toString())
+
+                            result_start_H.add(fixed.get(k).endH)
+                            result_start_M.add(fixed.get(k).endM)
+                            result_work.add(sample_work.get(i))
+                            Log.d("PUT_IMPO_Fi_SH", result_start_H.toString())
+                            Log.d("PUT_IMPO_Fi_SM", result_start_M.toString())
+                            Log.d("PUT_IMPO_Fi_ENDH", result_end_H.toString())
+                            Log.d("PUT_IMPO_Fi_ENDM", result_end_M.toString())
+                            Log.d("PUT_IMPO_Fi_WORK", result_work.toString())
+
+                            updateNowTime(k)
+                            now_fixed += 1
+
+//                            if (now_fixed == fixed.size - 1) {
+//                                result_end_H.add(now_time_H.toString())
+//                                result_end_M.add(now_time_M.toString())
+//                                Log.d("PUT_IMPO_FiT_SH", result_start_H.toString())
+//                                Log.d("PUT_IMPO_FiT_SM", result_start_M.toString())
+//                                Log.d("PUT_IMPO_FiT_ENDH", result_end_H.toString())
+//                                Log.d("PUT_IMPO_FiT_ENDM", result_end_M.toString())
+//                                Log.d("PUT_IMPO_FiT_WORK", result_work.toString())
+//                                break
+//                            }
+                        }
+                        else {
+                            if (isSleep()) {
+                                result_end_H.add(sleepStartH.toString())
+                                result_end_M.add(sleepStartM.toString())
+                                Log.d("PUT_IMPO_Si_SH", result_start_H.toString())
+                                Log.d("PUT_IMPO_Si_SM", result_start_M.toString())
+                                Log.d("PUT_IMPO_Si_ENDH", result_end_H.toString())
+                                Log.d("PUT_IMPO_Si_ENDM", result_end_M.toString())
+                                Log.d("PUT_IMPO_Si_WORK", result_work.toString())
+                                break
+                            }
+
+                            result_end_H.add(now_time_H.toString())
+                            result_end_M.add(now_time_M.toString())
+                            Log.d("PUT_IMPO_Se_SH", result_start_H.toString())
+                            Log.d("PUT_IMPO_Se_SM", result_start_M.toString())
+                            Log.d("PUT_IMPO_Se_ENDH", result_end_H.toString())
+                            Log.d("PUT_IMPO_Se_ENDM", result_end_M.toString())
+                            Log.d("PUT_IMPO_Se_WORK", result_work.toString())
+                            break
+                        }
+                    }
+                }
+                else {
+                    result_end_H.add(now_time_H.toString())
+                    result_end_M.add(now_time_M.toString())
+                    Log.d("PUT_IMPO_Ei_SH", result_start_H.toString())
+                    Log.d("PUT_IMPO_Ei_SM", result_start_M.toString())
+                    Log.d("PUT_IMPO_Ei_ENDH", result_end_H.toString())
+                    Log.d("PUT_IMPO_Ei_ENDM", result_end_M.toString())
+                    Log.d("PUT_IMPO_Ei_WORK", result_work.toString())
+                }
+
+                daily.removeAt(i)
+                delete = true
+                sample_work.removeAt(i)
+                sample_num -= 1
+            }
+            if (!delete) i += 1
+        }
+
+
+    }
+
+    private fun put_result() {
+        Log.d("PUT_RESULT_START_SN", sample_num.toString())
+        for (i in 0 until sample_num) {
+            var work_H = daily.get(i).timeH.toInt()
+            var work_M = daily.get(i).timeM.toInt()
+            var now_fixed_num = now_fixed
+            Log.d("PUT_RESULT_START_NFN", now_fixed_num.toString())
+
+            if (result_start_H.size > result_end_H.size) {
+                result_end_H.add(now_time_H.toString())
+                result_end_M.add(now_time_M.toString())
+                Log.d("PUT_RESULT_F_SH", result_start_H.toString())
+                Log.d("PUT_RESULT_F_SM", result_start_M.toString())
+                Log.d("PUT_RESULT_F_ENDH", result_end_H.toString())
+                Log.d("PUT_RESULT_F_ENDM", result_end_M.toString())
+                Log.d("PUT_RESULT_F_WORK", result_work.toString())
+            }
+
+            result_start_H.add(now_time_H.toString())
+            result_start_M.add(now_time_M.toString())
+            result_work.add(sample_work.get(i))
+            Log.d("PUT_RESULT_S_SH", result_start_H.toString())
+            Log.d("PUT_RESULT_S_SM", result_start_M.toString())
+            Log.d("PUT_RESULT_S_ENDH", result_end_H.toString())
+            Log.d("PUT_RESULT_S_ENDM", result_end_M.toString())
+            Log.d("PUT_RESULT_S_WORK", result_work.toString())
+
+            doDaily(work_H, work_M)
+
+            if (isConflict()) {
+                for (k in now_fixed_num until fixed_num) {
+                    if (fixed.get(k).startH.toInt() < now_time_H || (fixed.get(k).startH.toInt() == now_time_H && fixed.get(k).startM.toInt() < now_time_M)) {
+                        if (isSleep()) {
+                            result_end_H.add(sleepStartH.toString())
+                            result_end_M.add(sleepStartM.toString())
+                            Log.d("PUT_RESULT_T_SH", result_start_H.toString())
+                            Log.d("PUT_RESULT_T_SM", result_start_M.toString())
+                            Log.d("PUT_RESULT_T_ENDH", result_end_H.toString())
+                            Log.d("PUT_RESULT_T_ENDM", result_end_M.toString())
+                            Log.d("PUT_RESULT_T_WORK", result_work.toString())
+                            break
+                        }
+
+                        result_end_H.add(fixed.get(k).startH)
+                        result_end_M.add(fixed.get(k).startM)
+                        Log.d("PUT_RESULT_Fo_SH", result_start_H.toString())
+                        Log.d("PUT_RESULT_Fo_SM", result_start_M.toString())
+                        Log.d("PUT_RESULT_Fo_ENDH", result_end_H.toString())
+                        Log.d("PUT_RESULT_Fo_ENDM", result_end_M.toString())
+                        Log.d("PUT_RESULT_Fo_WORK", result_work.toString())
+
+                        result_start_H.add(fixed.get(k).endH)
+                        result_start_M.add(fixed.get(k).endM)
+                        result_work.add(sample_work.get(i))
+                        Log.d("PUT_RESULT_Fi_SH", result_start_H.toString())
+                        Log.d("PUT_RESULT_Fi_SM", result_start_M.toString())
+                        Log.d("PUT_RESULT_Fi_ENDH", result_end_H.toString())
+                        Log.d("PUT_RESULT_Fi_ENDM", result_end_M.toString())
+                        Log.d("PUT_RESULT_Fi_WORK", result_work.toString())
+
+                        updateNowTime(k)
+                        now_fixed += 1
+                        Log.d("PUT_RESULT_NOW_FIXED", now_fixed.toString())
+                        Log.d("PUT_RESULT_FIXED_SIZE", fixed.size.toString())
+
+//                        if (now_fixed == fixed.size - 1) {
+//                            result_end_H.add(now_time_H.toString())
+//                            result_end_M.add(now_time_M.toString())
+//                            Log.d("PUT_RESULT_FiT_SH", result_start_H.toString())
+//                            Log.d("PUT_RESULT_FiT_SM", result_start_M.toString())
+//                            Log.d("PUT_RESULT_FiT_ENDH", result_end_H.toString())
+//                            Log.d("PUT_RESULT_FiT_ENDM", result_end_M.toString())
+//                            Log.d("PUT_RESULT_FiT_WORK", result_work.toString())
+//                            break
+//                        }
+                    }
+                    else {
+                        if (isSleep()) {
+                            result_end_H.add(sleepStartH.toString())
+                            result_end_M.add(sleepStartM.toString())
+                            Log.d("PUT_RESULT_Si_SH", result_start_H.toString())
+                            Log.d("PUT_RESULT_Si_SM", result_start_M.toString())
+                            Log.d("PUT_RESULT_Si_ENDH", result_end_H.toString())
+                            Log.d("PUT_RESULT_Si_ENDM", result_end_M.toString())
+                            Log.d("PUT_RESULT_Si_WORK", result_work.toString())
+                            break
+                        }
+
+                        result_end_H.add(now_time_H.toString())
+                        result_end_M.add(now_time_M.toString())
+                        Log.d("PUT_RESULT_Se_SH", result_start_H.toString())
+                        Log.d("PUT_RESULT_Se_SM", result_start_M.toString())
+                        Log.d("PUT_RESULT_Se_ENDH", result_end_H.toString())
+                        Log.d("PUT_RESULT_Se_ENDM", result_end_M.toString())
+                        Log.d("PUT_RESULT_Se_WORK", result_work.toString())
+                        break
+                    }
+                }
+            }
+            else {
+                result_end_H.add(now_time_H.toString())
+                result_end_M.add(now_time_M.toString())
+                Log.d("PUT_RESULT_Ei_SH", result_start_H.toString())
+                Log.d("PUT_RESULT_Ei_SM", result_start_M.toString())
+                Log.d("PUT_RESULT_Ei_ENDH", result_end_H.toString())
+                Log.d("PUT_RESULT_Ei_ENDM", result_end_M.toString())
+                Log.d("PUT_RESULT_Ei_WORK", result_work.toString())
+            }
+        }
+    }
+
+    private fun print_daily_work() {
+        sort_daily()
+        Log.d("SORT_DAILY_DAILY", daily.toString())
+        Log.d("SORT_DAILY_WORK", sample_work.toString())
+        Log.d("SORT_DAILY_RESULT", result_work.toString())
+        put_important_result()
+        Log.d("PUT_IMPORTANT_RESULT", result_work.toString())
+        put_result()
+        Log.d("PUT_RESULT", result_work.toString())
+        Log.d("PUT_RESULT_USE_DAILY", useDaily.toString())
+
+        orderedDaily.clear()
+        for (i in 0 until result_work.size) {
+            if (!(result_start_H.get(i).equals(result_end_H.get(i)) && result_start_M.get(i).equals(result_end_M.get(i)))) {
+                var origin = useDaily.get(result_work.get(i))
+                var ordered = OrderedSchedule(origin.dailyId, origin.name, result_start_H.get(i), result_start_M.get(i), result_end_H.get(i), result_end_M.get(i), 100)
+
+                var leftTime = calculateLeftTime(ordered)
+                Log.d("ORIGINLEFT", origin.left.toString())
+                Log.d("CAL_LEFT", leftTime.toString())
+                leftTime = origin.left - leftTime
+                origin.left = leftTime
+                useDaily.set(result_work.get(i), origin)
+
+                ordered.leftMinute = leftTime
+                orderedDaily.add(ordered)
+                Log.d("EACH_ORDERED", ordered.toString())
+            }
+        }
+
+        Log.d("All_ORDERED", orderedDaily.toString())
+    }
+
+    private fun calculateLeftTime(ordered : OrderedSchedule) : Int {
+        var hour : Int = 0
+        var minute : Int = 0
+        if (ordered.endM > ordered.startM) {
+            hour = (ordered.endH.toInt() - ordered.startH.toInt()) * 60
+            minute = ordered.endM.toInt() - ordered.startM.toInt()
+        } else {
+            hour = (ordered.endH.toInt() - 1 - ordered.startH.toInt()) * 60
+            minute = ordered.endM.toInt() + 60 - ordered.startM.toInt()
+        }
+        return hour + minute
+    }
+
+    private fun dailyToOrdered(){
+        for(i in daily) {
+            var ordered = OrderedSchedule(i.dailyId, i.name, "00","00","00","00",100)
+            orderedDaily.add(ordered)
+        }
+    }
+
+    private fun time_to_minute(schedule : DailySchedule) : Int {
+        Log.d("TTM", (schedule.timeH.toInt() * 60 + schedule.timeM.toInt()).toString())
+        return schedule.timeH.toInt() * 60 + schedule.timeM.toInt()
     }
 }

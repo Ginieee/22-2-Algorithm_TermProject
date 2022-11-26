@@ -48,8 +48,17 @@ class DailyScheduleRVAdapter : RecyclerView.Adapter<DailyScheduleRVAdapter.ViewH
         fun bind(daily : OrderedSchedule, position: Int) {
             binding.itemTodoOrder.text = (position + 1).toString()
             binding.itemTodoName.text = daily.name
-            binding.itemTodoTime.text = daily.startH + ":" + daily.startM + " ~ " + daily.endH + ":" + daily.endM
+
+            binding.itemTodoTime.text = setFormat(daily.startH) + ":" + setFormat(daily.startM) + " ~ " + setFormat(daily.endH) + ":" + setFormat(daily.endM)
             binding.itemTodoLessTime.text = daily.leftMinute.toString()
+        }
+
+        fun setFormat(input : String) : String {
+            var output : String = input
+            if (input.length < 2) {
+                output = "0" + input
+            }
+            return output
         }
     }
 }

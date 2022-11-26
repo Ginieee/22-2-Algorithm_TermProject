@@ -39,4 +39,7 @@ data class DailySchedule(
 
     @ColumnInfo(name = "daily_deadline_date")
     var deadlineDate : String = "",
+
+    @ColumnInfo(name = "daily_left_time")
+    var left : Int = 1440
 )

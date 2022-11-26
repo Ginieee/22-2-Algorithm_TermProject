@@ -146,6 +146,7 @@ class AddDailyFragment : Fragment() {
         daily.timeM = binding.dailyAddTimeMEdit.text.toString()
         daily.deadlineMonth = binding.dailyAddDeadlineMonthEdit.text.toString()
         daily.deadlineDate = binding.dailyAddDeadlineDateEdit.text.toString()
+        daily.left = time_to_minute(daily)
     }
 
     fun onRadioButtonClicked(view: View) {
@@ -168,5 +169,10 @@ class AddDailyFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun time_to_minute(schedule : DailySchedule) : Int {
+        Log.d("TTM", (schedule.timeH.toInt() * 60 + schedule.timeM.toInt()).toString())
+        return schedule.timeH.toInt() * 60 + schedule.timeM.toInt()
     }
 }
