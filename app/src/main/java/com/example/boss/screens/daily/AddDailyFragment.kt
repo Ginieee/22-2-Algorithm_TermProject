@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -35,6 +36,8 @@ class AddDailyFragment : Fragment() {
     private var date : Int = 0
     private var day : Int = 0
 
+    private var isDataAccept = false
+
     var deleteDaily : DailySchedule = DailySchedule()
 
     override fun onAttach(context: Context) {
@@ -54,7 +57,7 @@ class AddDailyFragment : Fragment() {
         getArgs()
         db = ScheduleDatabase.getInstance(requireContext())!!
 
-        var title : String = if (arg.isDelete) month.toString() + "월 " + date + "일 일정 추가" else month.toString() + "월 " + date + "일 일정 삭제"
+        var title : String = if (!arg.isDelete) month.toString() + "월 " + date + "일 일정 추가" else month.toString() + "월 " + date + "일 일정 삭제"
         binding.dailyAddTitleTv.text = title
 
         if (arg.isDelete) {
@@ -65,6 +68,8 @@ class AddDailyFragment : Fragment() {
             binding.dailyAddSaveBtn.visibility = View.VISIBLE
             binding.dailyAddDeleteBtn.visibility = View.GONE
         }
+
+        binding.dailyAddNormalRadioBtn.isChecked = true
 
         clickHandler()
 
@@ -103,15 +108,17 @@ class AddDailyFragment : Fragment() {
     private fun clickHandler() {
         binding.dailyAddSaveBtn.setOnClickListener {
             getData()
-            var print : String = ""
-            Thread {
-                db.dailyDao.insertDaily(daily)
-                print = db.dailyDao.getDateDaily(year, month, date).toString()
-            }.start()
-            Log.d("ADDDAILY", print)
+            if (isDataAccept) {
+                var print : String = ""
+                Thread {
+                    db.dailyDao.insertDaily(daily)
+                    print = db.dailyDao.getDateDaily(year, month, date).toString()
+                }.start()
+                Log.d("ADDDAILY", print)
 
-            val action = AddDailyFragmentDirections.actionAddDailyFragmentToDailyScheduleFragment(year, month, date, day)
-            findNavController().navigate(action)
+                val action = AddDailyFragmentDirections.actionAddDailyFragmentToDailyScheduleFragment(year, month, date, day)
+                findNavController().navigate(action)
+            }
         }
 
         binding.dailyAddBackBtn.setOnClickListener {
@@ -136,6 +143,45 @@ class AddDailyFragment : Fragment() {
     }
 
     private fun getData() {
+        isDataAccept = true
+
+        if (binding.dailyAddNameEt.text.isNullOrBlank()) {
+            Toast.makeText(mContext, "일정 이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (!(binding.dailyAddTimeHEdit.text.toString().length == 2) || !(binding.dailyAddTimeMEdit.text.toString().length == 2)) {
+            Toast.makeText(mContext, "시간은 HH:MM의 두 글자 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (binding.dailyAddTimeHEdit.text.toString().toInt() >= 24 || binding.dailyAddTimeHEdit.text.toString().toInt() < 0) {
+            Toast.makeText(mContext, "시간은 00:00 ~ 23:59 사이로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (binding.dailyAddTimeMEdit.text.toString().toInt() >= 60 || binding.dailyAddTimeMEdit.text.toString().toInt() < 0) {
+            Toast.makeText(mContext, "시간은 00:00 ~ 23:59 사이로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (!(binding.dailyAddDeadlineMonthEdit.text.toString().length == 2) || !(binding.dailyAddDeadlineDateEdit.toString().length == 2)) {
+            Toast.makeText(mContext, "날짜는 MM월 DD일의 두 글자 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (binding.dailyAddDeadlineMonthEdit.text.toString().toInt() > 12 || binding.dailyAddDeadlineMonthEdit.text.toString().toInt() < 1) {
+            Toast.makeText(mContext, "01~12월 사이의 달을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (binding.dailyAddDeadlineDateEdit.text.toString().toInt() > 31 || binding.dailyAddDeadlineDateEdit.text.toString().toInt() < 1) {
+            Toast.makeText(mContext, "해당 달에 존재하는 날짜를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+
+
         daily.day = day
         daily.year = year
         daily.month = month

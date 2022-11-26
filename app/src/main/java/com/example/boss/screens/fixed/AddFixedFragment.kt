@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -33,6 +34,8 @@ class AddFixedFragment : Fragment() {
     lateinit var db : ScheduleDatabase
 
     private val arg : AddFixedFragmentArgs by navArgs()
+
+    private var isDataAccept = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -92,13 +95,15 @@ class AddFixedFragment : Fragment() {
 
         binding.fixedAddSaveBtn.setOnClickListener {
             getData()
-            var print : String = ""
-            Thread {
-                db.fixedDao.insertFixed(add)
-                print = db.fixedDao.getDayFixed(dayNum).toString()
-            }.start()
-            Log.d("ADDFIXED", print)
-            findNavController().navigate(R.id.action_addFixedFragment_to_fixedFragment)
+            if (isDataAccept) {
+                var print : String = ""
+                Thread {
+                    db.fixedDao.insertFixed(add)
+                    print = db.fixedDao.getDayFixed(dayNum).toString()
+                }.start()
+                Log.d("ADDFIXED", print)
+                findNavController().navigate(R.id.action_addFixedFragment_to_fixedFragment)
+            }
         }
 
         binding.fixedAddBackBtn.setOnClickListener {
@@ -114,6 +119,37 @@ class AddFixedFragment : Fragment() {
     }
 
     private fun getData(){
+        isDataAccept = true
+
+        if (binding.fixedAddNameEt.text.toString().isNullOrBlank()) {
+            Toast.makeText(mContext, "일정 이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (
+            !(binding.fixedAddStartHEdit.text.toString().length == 2) ||
+            !(binding.fixedAddStartMEdit.text.toString().length == 2) ||
+            !(binding.fixedAddEndHEdit.text.toString().length == 2) ||
+            !(binding.fixedAddEndMEdit.toString().length == 2 )) {
+            Toast.makeText(mContext, "시간은 HH:MM의 두 글자 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (
+            (binding.fixedAddStartHEdit.text.toString().toInt() >= 24 || binding.fixedAddStartHEdit.text.toString().toInt() < 0)||
+            (binding.fixedAddEndHEdit.text.toString().toInt() >= 24 || binding.fixedAddEndHEdit.text.toString().toInt() < 0)) {
+            Toast.makeText(mContext, "시간은 00:00 ~ 23:59 사이로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+        else if (
+            (binding.fixedAddStartMEdit.text.toString().toInt() >= 60 || binding.fixedAddStartMEdit.text.toString().toInt() < 0)||
+            (binding.fixedAddEndMEdit.text.toString().toInt() >= 60 || binding.fixedAddEndMEdit.text.toString().toInt() < 0)) {
+            Toast.makeText(mContext, "시간은 00:00 ~ 23:59 사이로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            isDataAccept = false
+            return
+        }
+
         add.name = binding.fixedAddNameEt.text.toString()
         add.startH = binding.fixedAddStartHEdit.text.toString()
         add.startM = binding.fixedAddStartMEdit.text.toString()
