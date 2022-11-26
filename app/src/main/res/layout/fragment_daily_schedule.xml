@@ -179,6 +179,20 @@
                     tools:listitem="@layout/item_todo"/>
 
                 <TextView
+                    android:id="@+id/daily_fail_msg_tv"
+                    style="@style/add_daily_work"
+                    android:layout_width="120dp"
+                    android:layout_height="27dp"
+                    android:text="가용 시간 부족"
+                    android:background="@drawable/round_rect_border_red"
+                    android:textColor="#FE2E2E"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:textSize="15sp"
+                    android:visibility="gone"/>
+
+                <TextView
                     android:id="@+id/daily_add_btn"
                     style="@style/add_daily_work"
                     android:layout_width="120dp"

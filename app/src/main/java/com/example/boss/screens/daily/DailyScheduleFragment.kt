@@ -85,6 +85,8 @@ class DailyScheduleFragment : Fragment() {
     var result_end_M = arrayListOf<String>()
     var result_work = arrayListOf<Int>()
 
+    var isFailed : Boolean = false
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -461,8 +463,6 @@ class DailyScheduleFragment : Fragment() {
             }
             if (!delete) i += 1
         }
-
-
     }
 
     private fun put_result() {
@@ -603,8 +603,13 @@ class DailyScheduleFragment : Fragment() {
                 ordered.leftMinute = leftTime
                 orderedDaily.add(ordered)
                 Log.d("EACH_ORDERED", ordered.toString())
+
+                if (i == result_work.size - 1 && leftTime != 0) isFailed = true
+                else isFailed = false
             }
         }
+
+        setFailed()
 
         Log.d("All_ORDERED", orderedDaily.toString())
     }
@@ -619,6 +624,7 @@ class DailyScheduleFragment : Fragment() {
             hour = (ordered.endH.toInt() - 1 - ordered.startH.toInt()) * 60
             minute = ordered.endM.toInt() + 60 - ordered.startM.toInt()
         }
+
         return hour + minute
     }
 
@@ -632,5 +638,13 @@ class DailyScheduleFragment : Fragment() {
     private fun time_to_minute(schedule : DailySchedule) : Int {
         Log.d("TTM", (schedule.timeH.toInt() * 60 + schedule.timeM.toInt()).toString())
         return schedule.timeH.toInt() * 60 + schedule.timeM.toInt()
+    }
+
+    private fun setFailed() {
+        if (isFailed) {
+            binding.dailyFailMsgTv.visibility = View.VISIBLE
+        } else {
+            binding.dailyFailMsgTv.visibility = View.GONE
+        }
     }
 }
