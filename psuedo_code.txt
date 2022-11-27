@@ -57,10 +57,9 @@ while(!isSleep) : -> greedy napsack algorithm
         if(isConflict) :
             for(until fixed_schedule_num) : 
                 update_now_time
-        else : break
 
     while(all daily_schedule) :
         if(isConflict) :
             for(until fixed_schedule_num) :
                 update_now_time
-        else : break
+
