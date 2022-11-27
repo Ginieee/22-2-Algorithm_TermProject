@@ -1,0 +1,66 @@
+//data set #1
+
+val fixed_start_H : Array<String> = arrayOf("09", "10", "12", "22")
+val fixed_start_M : Array<String> = arrayOf("00", "20", "30", "00")
+val fixed_end_H : Array<String> = arrayOf("09", "10", "14", "08")
+val fixed_end_M : Array<String> = arrayOf("50", "50", "30", "00")
+var fixed_num = 3
+
+val sample_deadLine_month : Array<Int> = arrayOf(12, 1, 11, 11)
+val sample_deadLine_date : Array<Int> = arrayOf(1, 1, 22, 25)
+val sample_timeH : ArrayList<String> = arrayListOf("01", "01", "02", "03")
+val sample_timeM : ArrayList<String> = arrayListOf("00", "00", "00", "00")
+var sample_work : ArrayList<Int> = arrayListOf<Int>(0, 1, 2, 3)
+var sample_important : ArrayList<Boolean> = arrayListOf<Boolean>(false, false, true, true)
+var sample_num = 4
+
+//data set #2
+
+val fixed_start_H : Array<String> = arrayOf("09", "10", "12", "16", "22")
+val fixed_start_M : Array<String> = arrayOf("00", "20", "30", "00", "00")
+val fixed_end_H : Array<String> = arrayOf("09", "11", "14", "19",  "08")
+val fixed_end_M : Array<String> = arrayOf("50", "50", "30", "00",  "00")
+var fixed_num = 4
+
+val sample_deadLine_month : Array<Int> = arrayOf(12, 1, 11)
+val sample_deadLine_date : Array<Int> = arrayOf(1, 1, 22)
+val sample_timeH : ArrayList<String> = arrayListOf("03", "01", "02")
+val sample_timeM : ArrayList<String> = arrayListOf("00", "00", "00")
+var sample_work : ArrayList<Int> = arrayListOf<Int>(0, 1, 2)
+var sample_important : ArrayList<Boolean> = arrayListOf<Boolean>(false, false, false)
+var sample_num = 3
+
+//data set #3
+
+val fixed_start_H : Array<String> = arrayOf("09", "12", "16", "22")
+val fixed_start_M : Array<String> = arrayOf("00", "10", "30", "00")
+val fixed_end_H : Array<String> = arrayOf("09", "13", "18")
+val fixed_end_M : Array<String> = arrayOf("50", "00", "30")
+var fixed_num = 3
+
+val sample_deadLine_month : Array<Int> = arrayOf(12, 11, 11, 1)
+val sample_deadLine_date : Array<Int> = arrayOf(1, 22, 23, 1)
+val sample_timeH : ArrayList<String> = arrayListOf("02", "01", "03", "01")
+val sample_timeM : ArrayList<String> = arrayListOf("50", "30", "10", "00")
+var sample_work : ArrayList<Int> = arrayListOf<Int>(0, 1, 2, 3)
+var sample_important : ArrayList<Boolean> = arrayListOf<Boolean>(false, false, true, false)
+var sample_num = 4
+
+//수도코드
+
+input :  daily_schedule, fixed_schedule
+output : print daily_schedule important order
+
+sort : daily_schedule weight ascending order
+while(!isSleep) : -> greedy napsack algorithm
+    while(all important_daily_schedule) :
+        if(isConflict) :
+            for(until fixed_schedule_num) : 
+                update_now_time
+        else : break
+
+    while(all daily_schedule) :
+        if(isConflict) :
+            for(until fixed_schedule_num) :
+                update_now_time
+        else : break
