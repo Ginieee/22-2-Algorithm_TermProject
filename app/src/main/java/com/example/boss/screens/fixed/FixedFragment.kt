@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +29,7 @@ class FixedFragment : Fragment() {
     var startM = ""
     var endH = ""
     var endM = ""
+    var isSleepAccepted = false
 
     private lateinit var binding : FragmentFixedBinding
     lateinit var db : ScheduleDatabase
@@ -160,8 +162,10 @@ class FixedFragment : Fragment() {
             inputMethodManager.hideSoftInputFromWindow(binding.fixedSleepSaveBtn.windowToken, 0)
 
             editSleep(false)
-            putPref()
-            setSleepText()
+            if (isSleepAccepted) {
+                putPref()
+                setSleepText()
+            }
         }
 
         binding.fixedMonAdd.setOnClickListener {
@@ -280,6 +284,37 @@ class FixedFragment : Fragment() {
             binding.fixedSleepEditBtn.visibility = View.GONE
         }
         else {
+            isSleepAccepted = true
+
+            if (binding.fixedSleepStartHEdit.text.toString().length != 2 ||
+                binding.fixedSleepStartMEdit.text.toString().length != 2 ||
+                binding.fixedSleepEndHEdit.text.toString().length != 2 ||
+                binding.fixedSleepEndMEdit.text.toString().length != 2) {
+                Toast.makeText(context, "시간은 HH:MM의 두 글자씩의 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                isSleepAccepted = false
+                return
+            }
+            else if (binding.fixedSleepStartHEdit.text.toString().toInt() < 20 || binding.fixedSleepStartHEdit.text.toString().toInt() > 23) {
+                Toast.makeText(context, "수면 시작 시간은 20:00 ~ 23:59 사이로만 지정할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                isSleepAccepted = false
+                return
+            }
+            else if (binding.fixedSleepStartMEdit.text.toString().toInt() < 0 || binding.fixedSleepStartMEdit.text.toString().toInt() >= 60) {
+                Toast.makeText(context, "수면 시작 시간은 20:00 ~ 23:59 사이로만 지정할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                isSleepAccepted = false
+                return
+            }
+            else if (binding.fixedSleepEndHEdit.text.toString().toInt() >= 13 || binding.fixedSleepEndHEdit.text.toString().toInt() < 0) {
+                Toast.makeText(context, "수면 종료 시간은 00:00 ~ 12:59 사이로만 지정할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                isSleepAccepted = false
+                return
+            }
+            else if (binding.fixedSleepEndMEdit.text.toString().toInt() < 0 || binding.fixedSleepEndMEdit.text.toString().toInt() >= 60) {
+                Toast.makeText(context, "수면 종료 시간은 00:00 ~ 12:59 사이로만 지정할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                isSleepAccepted = false
+                return
+            }
+
             startH = binding.fixedSleepStartHEdit.text.toString()
             startM = binding.fixedSleepStartMEdit.text.toString()
             endH = binding.fixedSleepEndHEdit.text.toString()
