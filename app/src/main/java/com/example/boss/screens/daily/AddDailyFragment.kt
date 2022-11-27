@@ -150,7 +150,7 @@ class AddDailyFragment : Fragment() {
             isDataAccept = false
             return
         }
-        else if (!(binding.dailyAddTimeHEdit.text.toString().length == 2) || !(binding.dailyAddTimeMEdit.text.toString().length == 2)) {
+        else if ((binding.dailyAddTimeHEdit.text.toString().length != 2) || (binding.dailyAddTimeMEdit.text.toString().length != 2)) {
             Toast.makeText(mContext, "시간은 HH:MM의 두 글자 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
             isDataAccept = false
             return
@@ -165,7 +165,7 @@ class AddDailyFragment : Fragment() {
             isDataAccept = false
             return
         }
-        else if (!(binding.dailyAddDeadlineMonthEdit.text.toString().length == 2) || !(binding.dailyAddDeadlineDateEdit.toString().length == 2)) {
+        else if ((binding.dailyAddDeadlineMonthEdit.text.toString().length != 2) || (binding.dailyAddDeadlineDateEdit.text.toString().length != 2)) {
             Toast.makeText(mContext, "날짜는 MM월 DD일의 두 글자 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
             isDataAccept = false
             return

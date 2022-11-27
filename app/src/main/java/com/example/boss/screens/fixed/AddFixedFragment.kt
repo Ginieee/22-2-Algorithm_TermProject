@@ -121,16 +121,18 @@ class AddFixedFragment : Fragment() {
     private fun getData(){
         isDataAccept = true
 
+        Log.d("LENGTH", (binding.fixedAddStartHEdit.text.toString().length.toString()))
+
         if (binding.fixedAddNameEt.text.toString().isNullOrBlank()) {
             Toast.makeText(mContext, "일정 이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
             isDataAccept = false
             return
         }
         else if (
-            !(binding.fixedAddStartHEdit.text.toString().length == 2) ||
-            !(binding.fixedAddStartMEdit.text.toString().length == 2) ||
-            !(binding.fixedAddEndHEdit.text.toString().length == 2) ||
-            !(binding.fixedAddEndMEdit.toString().length == 2 )) {
+            (binding.fixedAddStartHEdit.text.toString().length != 2) ||
+            (binding.fixedAddStartMEdit.text.toString().length != 2) ||
+            (binding.fixedAddEndHEdit.text.toString().length != 2) ||
+            (binding.fixedAddEndMEdit.text.toString().length != 2 )) {
             Toast.makeText(mContext, "시간은 HH:MM의 두 글자 형태로 입력해주세요.", Toast.LENGTH_SHORT).show()
             isDataAccept = false
             return

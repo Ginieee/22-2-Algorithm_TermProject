@@ -188,6 +188,7 @@ class DailyScheduleFragment : Fragment() {
         }
         addSleepOnStart()
         fixed_num = fixed.size
+        now_fixed = 0
         getValidTime()
 
 
@@ -320,21 +321,54 @@ class DailyScheduleFragment : Fragment() {
     private fun isConflict() : Boolean {
         Log.d("ISCONFLICT", fixed.get(now_fixed).toString())
         Log.d("ISCONFLICT_NOW", now_time_H.toString() + "시 " + now_time_M.toString() + "분" )
-        if (now_time_H > fixed.get(now_fixed).startH.toInt() || (now_time_H == fixed.get(now_fixed).startH.toInt() && now_time_M > fixed.get(now_fixed).startM.toInt())) {
+        if ((now_time_H > fixed.get(now_fixed).startH.toInt()) ||
+            (now_time_H == fixed.get(now_fixed).startH.toInt() && now_time_M > fixed.get(now_fixed).startM.toInt())) {
+            Log.d("ISCONFLICT_RETURN", "true")
             return true
         }
+        Log.d("ISCONFLICT_RETURN", "false")
         return false
     }
 
+//    private fun updateNowTime(i : Int) {
+//        Log.d("UPDATE_NOW", fixed.get(i).toString())
+//        Log.d("UPDATE_NOW_Time", now_time_H.toString() + "시 " + now_time_M.toString() + "분")
+//        var nowMinusStartM = now_time_M - fixed.get(i).startM.toInt()
+//        if (nowMinusStartM < 0) {
+//            now_time_H -= 1
+//            nowMinusStartM = 60 - nowMinusStartM
+//        }
+//        if (nowMinusStartM + fixed.get(i).endM.toInt() >= 60) {
+//            now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt() + 1
+//            now_time_M = nowMinusStartM + fixed.get(i).endM.toInt() - 60
+//        }
+//        else {
+//            now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt()
+//            now_time_M = nowMinusStartM + fixed.get(i).endM.toInt()
+//        }
+//    }
+
     private fun updateNowTime(i : Int) {
+        Log.d("UPDATE_NOW", fixed.get(i).toString())
+        Log.d("UPDATE_NOW_Time", now_time_H.toString() + "시 " + now_time_M.toString() + "분")
         if (now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() >= 60) {
             now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt() + 1
             now_time_M = now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() - 60
+            Log.d("UPDATE_NOW", "60 upper")
+        } else if (now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt() < 0) {
+            Log.d("UPDATE_NOW", "0 lower")
+            Log.d("UPDATE_NOW", "nowtimeM " + now_time_M.toString())
+            Log.d("UPDATE_NOW", "startM " + fixed.get(i).startM.toInt().toString())
+            Log.d("UPDATE_NOW", "endM " + fixed.get(i).endM.toInt().toString())
+            now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt() - 1
+            now_time_M = 60 + (now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt())
         }
         else {
             now_time_H = now_time_H - fixed.get(i).startH.toInt() + fixed.get(i).endH.toInt()
             now_time_M = now_time_M - fixed.get(i).startM.toInt() + fixed.get(i).endM.toInt()
+            Log.d("UPDATE_NOW", "else")
         }
+        Log.d("UPDATE_NOW_AFTER", now_time_H.toString() + "시 " + now_time_M.toString() + "분")
     }
 
     private fun isSleep() : Boolean {
@@ -587,9 +621,14 @@ class DailyScheduleFragment : Fragment() {
         Log.d("PUT_RESULT", result_work.toString())
         Log.d("PUT_RESULT_USE_DAILY", useDaily.toString())
 
+        Log.d("PUT_RESULT_SH", result_start_H.toString())
+        Log.d("PUT_RESULT_SM", result_start_M.toString())
+        Log.d("PUT_RESULT_EH", result_end_H.toString())
+        Log.d("PUT_RESULT_EM", result_end_M.toString())
+
         orderedDaily.clear()
         for (i in 0 until result_work.size) {
-            if (!(result_start_H.get(i).equals(result_end_H.get(i)) && result_start_M.get(i).equals(result_end_M.get(i)))) {
+            if (!((result_start_H.get(i).toInt() == result_end_H.get(i).toInt()) && (result_start_M.get(i).toInt() == result_end_M.get(i).toInt()))) {
                 var origin = useDaily.get(result_work.get(i))
                 var ordered = OrderedSchedule(origin.dailyId, origin.name, result_start_H.get(i), result_start_M.get(i), result_end_H.get(i), result_end_M.get(i), 100)
 
@@ -604,8 +643,12 @@ class DailyScheduleFragment : Fragment() {
                 orderedDaily.add(ordered)
                 Log.d("EACH_ORDERED", ordered.toString())
 
-                if (i == result_work.size - 1 && leftTime != 0) isFailed = true
-                else isFailed = false
+                if (((ordered.endH.toInt() == sleepStartH.toInt() && ordered.endM.toInt() == sleepStartM.toInt()) && i != result_work.size - 1)
+                    || ((i == result_work.size - 1) && ordered.leftMinute != 0)) {
+                    isFailed = true
+                } else {
+                    isFailed = false
+                }
             }
         }
 
